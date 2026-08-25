@@ -7,7 +7,7 @@ const SUPABASE_URL = 'https://ediqthdjnsrorcktldiu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaXF0aGRqbnNyb3Jja3RsZGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDMxMzQsImV4cCI6MjEwMzIxOTEzNH0.uYsfs-T7qR-2krUushlPI0tDqONTYU1AIzEIud-_BNM';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SITE_BASE = '/<newmarathiwebsite>'; // Change this to match your new repo name
+const SITE_BASE = '/newmarathiwebsite'; 
 
 const globalScripts = `
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-5T2TC3J4G2"></script>
