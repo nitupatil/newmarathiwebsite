@@ -1,0 +1,12 @@
+{
+  "name": "marathiweebsite",
+  "version": "1.0.0",
+  "description": "Dynamic static site generator with Supabase",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
