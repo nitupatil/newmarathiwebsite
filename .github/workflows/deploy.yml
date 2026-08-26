@@ -3,6 +3,8 @@ name: Build and Deploy Site
 on:
   push:
     branches: ["main"]
+  repository_dispatch:
+    types: [supabase_trigger]
   workflow_dispatch:
 
 permissions:
