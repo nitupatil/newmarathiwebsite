@@ -67,15 +67,14 @@ const globalCSS = `
   /* Global Box Sizing */
   *, *::before, *::after { box-sizing: border-box; }
 
-  /* FIX: overflow-x: clip allows position: sticky to work properly while preventing mobile horizontal scroll */
+  /* FIX: Removed overflow-x on body/html so position: sticky works perfectly on Mobile browsers */
   html, body { 
     width: 100%; 
-    max-width: 100%;
+    max-width: 100vw;
     margin: 0; 
     padding: 0; 
-    overflow-x: clip; 
-    overscroll-behavior-x: none; 
     touch-action: pan-y; 
+    -webkit-text-size-adjust: 100%;
   }
 
   body { 
@@ -90,7 +89,7 @@ const globalCSS = `
   
   .article-main, .article-sidebar, .card-content, .brand-text-wrapper, .search-wrapper { min-width: 0; }
   
-  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-yellow); width: 0%; z-index: 9999; }
+  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-yellow); width: 0%; z-index: 10005; }
 
   /* --- COMPACT HEADER --- */
   .main-header { background: #fff; border-bottom: 1px solid #e2e8f0; width: 100%; }
@@ -116,10 +115,10 @@ const globalCSS = `
   .search-result-item { padding: 10px 15px; border-bottom: 1px solid #f1f5f9; display: block; font-size: 0.85rem; font-weight: 600; color: var(--primary); overflow-wrap: break-word; }
   .search-result-item:hover { background: #f8fafc; color: var(--accent-orange); }
 
-  /* --- STICKY NAVIGATION --- */
-  .nav-bar { background: var(--primary-dark); color: #fff; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid var(--accent-yellow); position: -webkit-sticky; position: sticky; top: 0; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; }
+  /* --- STICKY NAVIGATION (Perfectly fixed at the top) --- */
+  .nav-bar { background: var(--primary-dark); color: #fff; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid var(--accent-yellow); position: -webkit-sticky; position: sticky; top: 0; z-index: 10000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; }
   .horizontal-nav { display: flex; justify-content: flex-start; gap: 30px; width: 100%; max-width: 1600px; padding: 0 4%; margin: 0 auto; }
-  .horizontal-nav a { font-size: 0.95rem; font-weight: 600; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
+  .horizontal-nav a { font-size: 0.95rem; font-weight: 600; padding: 12px 0; transition: color 0.2s; white-space: nowrap; }
   .horizontal-nav a:hover { color: var(--accent-yellow); }
 
   /* Ticker */
@@ -168,7 +167,7 @@ const globalCSS = `
   .btn-copy { background: var(--primary); }
 
   /* Toast Notification */
-  .toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 600; font-size: 0.95rem; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
+  .toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 10px; position: fixed; z-index: 10001; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 600; font-size: 0.95rem; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
   .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
   /* --- AD CAROUSEL --- */
@@ -250,7 +249,7 @@ const generateGlobalScripts = (postsData) => `
     }
     document.addEventListener('click', e => { if (!e.target.closest('.search-wrapper')) document.getElementById('searchResults').style.display = 'none'; });
 
-    // Animated Placeholder Logic - FIX: Keeps the icon permanently
+    // Animated Placeholder Logic - FIX: Keeps the magnifier icon permanently locked
     const searchPrefix = "🔍 ";
     const searchTerms = ["माहिती...", "लाडकी बहीण योजना...", "नोकरी...", "शासकीय योजना...", "शोधा..."];
     let termIndex = 0;
@@ -268,16 +267,16 @@ const generateGlobalScripts = (postsData) => `
         charIndex++;
       }
       
-      // The prefix (🔍) is added on top of the substring text every time
+      // The prefix (🔍) is added on top of the text string every time, so it's never deleted
       typeElement.setAttribute('placeholder', searchPrefix + currentTerm.substring(0, charIndex));
 
       let typeSpeed = isDeleting ? 40 : 100;
 
       if (!isDeleting && charIndex === currentTerm.length) {
-        typeSpeed = 2000; // Pause at the end of word
+        typeSpeed = 2000; // Pause when word is completely typed out
         isDeleting = true;
       } else if (isDeleting && charIndex === 0) {
-        isDeleting = false; // Finished deleting, move to next word
+        isDeleting = false; // Move to the next word after backspacing is finished
         termIndex = (termIndex + 1) % searchTerms.length;
         typeSpeed = 400;
       }
