@@ -67,7 +67,6 @@ const globalCSS = `
   /* Global Box Sizing */
   *, *::before, *::after { box-sizing: border-box; }
 
-  /* FIX: Removed overflow-x on body/html so position: sticky works perfectly on Mobile browsers */
   html, body { 
     width: 100%; 
     max-width: 100vw;
@@ -108,14 +107,14 @@ const globalCSS = `
   .datetime-box { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; white-space: nowrap; }
   
   .search-wrapper { position: relative; width: 100%; max-width: 300px; }
-  /* iOS Zoom Fix: font-size strictly set to 16px */
+  /* iOS Zoom Fix */
   .search-input { width: 100%; padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 20px; outline: none; font-size: 16px !important; background: #f8fafc; }
   .search-input:focus { border-color: var(--primary); background: #fff; }
   .search-results { display: none; position: absolute; top: 40px; left: 0; right: 0; background: #fff; box-shadow: var(--shadow); border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 1001; }
   .search-result-item { padding: 10px 15px; border-bottom: 1px solid #f1f5f9; display: block; font-size: 0.85rem; font-weight: 600; color: var(--primary); overflow-wrap: break-word; }
   .search-result-item:hover { background: #f8fafc; color: var(--accent-orange); }
 
-  /* --- STICKY NAVIGATION (Perfectly fixed at the top) --- */
+  /* --- STICKY NAVIGATION --- */
   .nav-bar { background: var(--primary-dark); color: #fff; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid var(--accent-yellow); position: -webkit-sticky; position: sticky; top: 0; z-index: 10000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; }
   .horizontal-nav { display: flex; justify-content: flex-start; gap: 30px; width: 100%; max-width: 1600px; padding: 0 4%; margin: 0 auto; }
   .horizontal-nav a { font-size: 0.95rem; font-weight: 600; padding: 12px 0; transition: color 0.2s; white-space: nowrap; }
@@ -138,7 +137,6 @@ const globalCSS = `
   @media (min-width: 1024px) {
     .article-layout { flex-direction: row; align-items: flex-start; }
     .article-main { flex: 3; } 
-    /* Sidebar sits below the sticky nav */
     .article-sidebar { flex: 1; min-width: 320px; max-width: 400px; position: sticky; top: 60px; max-height: calc(100vh - 80px); overflow-y: auto; padding-right: 10px; }
   }
 
@@ -249,7 +247,7 @@ const generateGlobalScripts = (postsData) => `
     }
     document.addEventListener('click', e => { if (!e.target.closest('.search-wrapper')) document.getElementById('searchResults').style.display = 'none'; });
 
-    // Animated Placeholder Logic - FIX: Keeps the magnifier icon permanently locked
+    // Animated Placeholder Logic - Locked Icon
     const searchPrefix = "🔍 ";
     const searchTerms = ["माहिती...", "लाडकी बहीण योजना...", "नोकरी...", "शासकीय योजना...", "शोधा..."];
     let termIndex = 0;
@@ -267,16 +265,15 @@ const generateGlobalScripts = (postsData) => `
         charIndex++;
       }
       
-      // The prefix (🔍) is added on top of the text string every time, so it's never deleted
       typeElement.setAttribute('placeholder', searchPrefix + currentTerm.substring(0, charIndex));
 
       let typeSpeed = isDeleting ? 40 : 100;
 
       if (!isDeleting && charIndex === currentTerm.length) {
-        typeSpeed = 2000; // Pause when word is completely typed out
+        typeSpeed = 2000; 
         isDeleting = true;
       } else if (isDeleting && charIndex === 0) {
-        isDeleting = false; // Move to the next word after backspacing is finished
+        isDeleting = false; 
         termIndex = (termIndex + 1) % searchTerms.length;
         typeSpeed = 400;
       }
@@ -357,17 +354,24 @@ const generateHeader = () => `
   </div>
 `;
 
-// Ad Generator 
-const generateAdCarousel = (ads, location, postSlug = null) => {
+// Ad Generator - UPDATED ARRAY LOGIC
+const generateAdCarousel = (ads, location, postId = null) => {
   if (!ads || ads.length === 0) return '';
   const activeAds = ads.filter(ad => {
     const rule = ad.display_rule || 'all';
+    
     if (rule === 'all') return true;
-    if (location === 'home' && (rule === 'home_only' || rule === 'home_and_post')) return true;
-    if (location === 'post' && (rule === 'specific_post' || rule === 'home_and_post')) {
-      if (rule === 'specific_post' && ad.target_slug !== postSlug) return false;
-      return true;
+    
+    if (location === 'home') {
+      return rule === 'home_only' || rule === 'home_and_specific_posts';
     }
+    
+    if (location === 'post') {
+      if (rule === 'specific_posts' || rule === 'home_and_specific_posts') {
+        return ad.target_post_ids && Array.isArray(ad.target_post_ids) && ad.target_post_ids.includes(postId);
+      }
+    }
+    
     return false;
   });
 
@@ -388,7 +392,8 @@ const generateAdCarousel = (ads, location, postSlug = null) => {
 // --- CORE BUILDER ---
 async function buildSite() {
   const rootPath = __dirname;
-  const { data: posts } = await supabase.from('blogs').select('*').order('created_at', { ascending: false });
+  // Included the .eq('status', 'published') filter to handle draft/hidden posts properly
+  const { data: posts } = await supabase.from('blogs').select('*').eq('status', 'published').order('created_at', { ascending: false });
   const { data: ads } = await supabase.from('ads').select('*').order('created_at', { ascending: false });
 
   const minimalSearchData = posts ? posts.map(p => ({ title: p.title, slug: p.slug })) : [];
@@ -398,7 +403,9 @@ async function buildSite() {
   // 1. Generate Individual Posts
   if (posts) {
     posts.forEach((post) => {
-      const postAdsHtml = generateAdCarousel(ads, 'post', post.slug);
+      // Pass post.id instead of slug for array matching
+      const postAdsHtml = generateAdCarousel(ads, 'post', post.id);
+      
       let relatedHtml = posts.filter(p => p.id !== post.id).slice(0, 6).map(p => `
         <a href="${SITE_BASE}/${p.slug}" class="post-card" style="margin-bottom: 20px; border-radius: 8px;">
           <div class="card-img-wrap" style="height: 100px;"><img src="${extractImg(p.content)}"></div>
