@@ -64,16 +64,16 @@ const globalCSS = `
     --shadow: 0 4px 12px rgba(0,0,0,0.05); 
   }
 
-  /* Global Box Sizing & Overflows */
+  /* Global Box Sizing */
   *, *::before, *::after { box-sizing: border-box; }
 
-  /* Mobile Wobble & Horizontal Scroll Fixes */
+  /* FIX: overflow-x: clip allows position: sticky to work properly while preventing mobile horizontal scroll */
   html, body { 
     width: 100%; 
     max-width: 100%;
     margin: 0; 
     padding: 0; 
-    overflow-x: hidden; 
+    overflow-x: clip; 
     overscroll-behavior-x: none; 
     touch-action: pan-y; 
   }
@@ -92,7 +92,7 @@ const globalCSS = `
   
   #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-yellow); width: 0%; z-index: 9999; }
 
-  /* --- COMPACT HEADER (Not Sticky, scrolls away) --- */
+  /* --- COMPACT HEADER --- */
   .main-header { background: #fff; border-bottom: 1px solid #e2e8f0; width: 100%; }
   .header-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 4%; max-width: 1600px; margin: 0 auto; width: 100%; }
   
@@ -116,8 +116,8 @@ const globalCSS = `
   .search-result-item { padding: 10px 15px; border-bottom: 1px solid #f1f5f9; display: block; font-size: 0.85rem; font-weight: 600; color: var(--primary); overflow-wrap: break-word; }
   .search-result-item:hover { background: #f8fafc; color: var(--accent-orange); }
 
-  /* --- STICKY NAVIGATION (This stays at the top always) --- */
-  .nav-bar { background: var(--primary-dark); color: #fff; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid var(--accent-yellow); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; }
+  /* --- STICKY NAVIGATION --- */
+  .nav-bar { background: var(--primary-dark); color: #fff; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid var(--accent-yellow); position: -webkit-sticky; position: sticky; top: 0; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; }
   .horizontal-nav { display: flex; justify-content: flex-start; gap: 30px; width: 100%; max-width: 1600px; padding: 0 4%; margin: 0 auto; }
   .horizontal-nav a { font-size: 0.95rem; font-weight: 600; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
   .horizontal-nav a:hover { color: var(--accent-yellow); }
@@ -139,7 +139,7 @@ const globalCSS = `
   @media (min-width: 1024px) {
     .article-layout { flex-direction: row; align-items: flex-start; }
     .article-main { flex: 3; } 
-    /* Sidebar sticky spacing accounts for the nav bar */
+    /* Sidebar sits below the sticky nav */
     .article-sidebar { flex: 1; min-width: 320px; max-width: 400px; position: sticky; top: 60px; max-height: calc(100vh - 80px); overflow-y: auto; padding-right: 10px; }
   }
 
@@ -250,8 +250,9 @@ const generateGlobalScripts = (postsData) => `
     }
     document.addEventListener('click', e => { if (!e.target.closest('.search-wrapper')) document.getElementById('searchResults').style.display = 'none'; });
 
-    // Animated Placeholder Logic
-    const searchTerms = ["🔍 माहिती...", "🔍 लाडकी बहीण योजना...", "🔍 नोकरी...", "🔍 शासकीय योजना...", "🔍 शोधा..."];
+    // Animated Placeholder Logic - FIX: Keeps the icon permanently
+    const searchPrefix = "🔍 ";
+    const searchTerms = ["माहिती...", "लाडकी बहीण योजना...", "नोकरी...", "शासकीय योजना...", "शोधा..."];
     let termIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -262,20 +263,21 @@ const generateGlobalScripts = (postsData) => `
       const currentTerm = searchTerms[termIndex];
       
       if (isDeleting) {
-        typeElement.setAttribute('placeholder', currentTerm.substring(0, charIndex - 1));
         charIndex--;
       } else {
-        typeElement.setAttribute('placeholder', currentTerm.substring(0, charIndex + 1));
         charIndex++;
       }
+      
+      // The prefix (🔍) is added on top of the substring text every time
+      typeElement.setAttribute('placeholder', searchPrefix + currentTerm.substring(0, charIndex));
 
       let typeSpeed = isDeleting ? 40 : 100;
 
       if (!isDeleting && charIndex === currentTerm.length) {
-        typeSpeed = 2000;
+        typeSpeed = 2000; // Pause at the end of word
         isDeleting = true;
       } else if (isDeleting && charIndex === 0) {
-        isDeleting = false;
+        isDeleting = false; // Finished deleting, move to next word
         termIndex = (termIndex + 1) % searchTerms.length;
         typeSpeed = 400;
       }
