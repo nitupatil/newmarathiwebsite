@@ -85,9 +85,10 @@ async function buildSite() {
     adHtml = `<div class="ad-unit" onclick="trackAdClick(${ad.id}, '${ad.target_url || ''}')"><div class="ad-label">Advertisement</div>${media}<script>window.addEventListener('DOMContentLoaded', () => trackAdView(${ad.id}));</script></div>`;
   }
 
-  let featuredHtml = '', othersHtml = '';
   const extractImg = (html) => { const match = html.match(/<img[^>]+src="([^">]+)"/); return match ? match[1] : 'https://placehold.co/150x150?text=News'; };
 
+  // Generate Index Page
+  let featuredHtml = '', othersHtml = '';
   if (posts && posts.length > 0) {
     const featured = posts[0];
     const others = posts.slice(1);
@@ -100,6 +101,7 @@ async function buildSite() {
   const indexHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Vitthal Speaks - News</title><style>${globalCSS}</style>${globalScripts}</head><body>${headerHTML}<div class="container">${featuredHtml}${adHtml}<div class="news-grid">${othersHtml}</div></div></body></html>`;
   fs.writeFileSync(path.join(rootPath, 'index.html'), indexHtml);
 
+  // Generate Individual Posts
   if (posts) {
     posts.forEach(post => {
       let relatedHtml = posts.filter(p => p.id !== post.id).slice(0, 3).map(p => `<a href="${SITE_BASE}/${p.slug}" class="news-item"><div><h4 class="news-title" style="font-size:1rem;">${p.title}</h4></div><img src="${extractImg(p.content)}" class="news-thumbnail" style="width:60px; height:60px;"></a>`).join('');
@@ -108,6 +110,16 @@ async function buildSite() {
     });
   }
 
+  // Generate 404 Error Page (The New Addition!)
+  let suggestedHtml = '';
+  if (posts && posts.length > 0) {
+    suggestedHtml = posts.slice(0, 3).map(p => `<a href="${SITE_BASE}/${p.slug}" class="news-item"><div><h4 class="news-title" style="font-size:1rem;">${p.title}</h4></div><img src="${extractImg(p.content)}" class="news-thumbnail" style="width:60px; height:60px;"></a>`).join('');
+  }
+  
+  const notFoundHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Page Not Found - Vitthal Speaks</title><style>${globalCSS}</style>${globalScripts}</head><body>${headerHTML}<div class="container"><div class="article-card" style="text-align: center; padding: 60px 20px;"><h1 style="color: var(--accent); font-size: 4rem; margin: 0 0 10px 0;">४०४</h1><h2 style="font-size: 1.8rem; margin-top: 0;">माफ करा, ही पोस्ट उपलब्ध नाही.</h2><p style="color: var(--muted); margin-bottom: 30px; font-size: 1.1rem;">तुम्ही शोधत असलेली पोस्ट डिलीट केली गेली असू शकते किंवा लिंक चुकीची असू शकते.</p><a href="${SITE_BASE}/" style="display: inline-block; background: var(--primary); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">मुख्यपृष्ठावर परत जा (Go to Home)</a></div><h3 style="margin-top: 40px; border-bottom: 2px solid var(--accent); padding-bottom: 8px;">नवीनतम लेख वाचा (Read Latest Posts)</h3><div class="news-grid" style="margin-top: 20px;">${suggestedHtml}</div></div></body></html>`;
+  fs.writeFileSync(path.join(rootPath, '404.html'), notFoundHtml);
+
+  // Generate Static Pages
   const staticPages = [
     { slug: 'contact', title: 'Contact Us', content: '<div class="article-card"><h1 class="article-title">Contact Us</h1><p>Email us at: support@example.com</p></div>' },
     { slug: 'privacy-policy', title: 'Privacy Policy', content: '<div class="article-card"><h1 class="article-title">Privacy Policy</h1><p>Your privacy is important to us.</p></div>' }
