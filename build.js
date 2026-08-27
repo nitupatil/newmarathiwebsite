@@ -10,6 +10,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const SITE_BASE = '/newmarathiwebsite'; 
 const FULL_SITE_URL = 'https://nitupatil.github.io' + SITE_BASE;
 const INSTAGRAM_URL = 'https://instagram.com/vitthalspeaks';
+const AVATAR_URL = 'https://i.ibb.co/BVw78vKq/394000910-240835825678358-5228163708350764536-n-removebg-preview.png';
 
 // --- HELPERS ---
 const escapeAttr = (str) => {
@@ -42,7 +43,7 @@ function getYouTubeEmbedUrl(url) {
   return videoId ? `https://www.youtube.com/embed/${videoId}?enablejsapi=1` : url;
 }
 
-// --- GLOBAL CSS (Full Screen Desktop, Custom Logo, Slider) ---
+// --- GLOBAL CSS ---
 const globalCSS = `
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap');
   
@@ -57,14 +58,55 @@ const globalCSS = `
   
   #progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: var(--accent-orange); width: 0%; z-index: 9999; }
 
-  /* --- FULL WIDTH HEADER & CUSTOM LOGO --- */
-  .main-header { background: #fff; padding: 15px 3%; border-bottom: 2px solid var(--accent-orange); box-shadow: 0 2px 15px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; }
-  .header-container { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+  /* --- HEADER & FLOATING VECTORS --- */
+  .main-header { 
+    background: linear-gradient(135deg, #ffffff 0%, #f4f7f9 100%); 
+    padding: 15px 3%; 
+    border-bottom: 2px solid var(--accent-orange); 
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08); 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
+    overflow: hidden; /* Contains floating vectors */
+  }
+  
+  /* Floating Background Text */
+  .floating-vector {
+    position: absolute;
+    color: rgba(0, 33, 71, 0.04);
+    font-size: 2.5rem;
+    font-weight: 800;
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    z-index: 1;
+  }
+  .f-1 { top: -10px; left: 5%; animation: floatDrift 20s infinite alternate; }
+  .f-2 { bottom: -15px; left: 30%; font-size: 3.5rem; animation: floatDrift 25s infinite alternate-reverse; }
+  .f-3 { top: 20%; right: 10%; animation: floatDrift 22s infinite alternate; }
+  .f-4 { top: 40%; right: 40%; font-size: 2rem; animation: floatDrift 18s infinite alternate-reverse; }
+  .f-5 { bottom: 5%; right: -5%; font-size: 4rem; opacity: 0.5; animation: floatDrift 30s infinite alternate; }
+
+  .header-container { width: 100%; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
   
   .custom-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
   .brand-avatar { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; background: var(--primary); border: 2px solid var(--accent-orange); box-shadow: 0 4px 10px rgba(255,152,0,0.3); }
-  .brand-text { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; line-height: 1; display: flex; align-items: baseline; gap: 4px; }
-  .brand-tld { font-size: 1rem; font-weight: 600; color: var(--accent-orange); background: rgba(255,152,0,0.1); padding: 2px 6px; border-radius: 6px; }
+  
+  /* Gradient Title Text */
+  .brand-text { 
+    font-family: 'Poppins', sans-serif; 
+    font-size: 2.2rem; 
+    font-weight: 800; 
+    background: linear-gradient(90deg, var(--primary), #0056b3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px; 
+    line-height: 1; 
+    display: flex; 
+    align-items: baseline; 
+    gap: 4px; 
+  }
+  .brand-tld { font-size: 1rem; font-weight: 600; color: var(--accent-orange); -webkit-text-fill-color: var(--accent-orange); background: rgba(255,152,0,0.1); padding: 2px 6px; border-radius: 6px; }
 
   .header-right { display: flex; align-items: center; gap: 25px; flex-grow: 1; justify-content: flex-end; }
   .badges-container { display: flex; gap: 10px; }
@@ -72,7 +114,7 @@ const globalCSS = `
   
   /* Search Box */
   .search-wrapper { position: relative; width: 100%; max-width: 300px; }
-  .search-input { width: 100%; padding: 10px 20px; border: 2px solid #e2e8f0; border-radius: 30px; outline: none; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; background: #f8fafc; box-sizing: border-box; }
+  .search-input { width: 100%; padding: 10px 20px; border: 2px solid #e2e8f0; border-radius: 30px; outline: none; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); box-sizing: border-box; }
   .search-input:focus { border-color: var(--accent-orange); background: #fff; box-shadow: 0 0 0 4px rgba(255,152,0,0.1); }
   .search-results { display: none; position: absolute; top: 45px; left: 0; right: 0; background: #fff; box-shadow: var(--hover-shadow); border-radius: 12px; max-height: 350px; overflow-y: auto; z-index: 1001; }
   .search-result-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; display: block; font-size: 0.9rem; font-weight: 600; color: var(--primary); }
@@ -92,7 +134,7 @@ const globalCSS = `
   .ticker-move { display: inline-block; animation: ticker 25s linear infinite; white-space: nowrap; padding-left: 100%; }
   .ticker-item { margin-right: 40px; font-weight: 600; color: var(--text-main); }
   
-  /* --- FULL WIDTH LAYOUT --- */
+  /* --- LAYOUT --- */
   .container { width: 96%; max-width: 1600px; margin: 30px auto; min-height: 70vh; }
   .section-title { font-size: 1.6rem; font-weight: 800; border-bottom: 3px solid var(--accent-orange); padding-bottom: 8px; margin: 0 0 25px; color: var(--primary); display: inline-block; }
   
@@ -102,14 +144,14 @@ const globalCSS = `
   
   @media (min-width: 1024px) {
     .article-layout { flex-direction: row; align-items: flex-start; }
-    .article-main { flex: 3; } /* Takes up much more space on desktop */
+    .article-main { flex: 3; } 
     .article-sidebar { flex: 1; min-width: 350px; max-width: 450px; display: block; position: sticky; top: 100px; max-height: calc(100vh - 120px); overflow-y: auto; padding-right: 15px; }
     .article-sidebar::-webkit-scrollbar { width: 6px; }
     .article-sidebar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
     .article-sidebar::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; }
   }
 
-  /* Post Cards & Grid */
+  /* Grid & Cards */
   .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
   .post-card { background: var(--card-bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
   .post-card:hover { transform: translateY(-6px); box-shadow: var(--hover-shadow); }
@@ -119,14 +161,14 @@ const globalCSS = `
   .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
   .card-title { font-size: 1.3rem; font-weight: 700; margin: 0 0 12px; line-height: 1.4; color: var(--primary); }
 
-  /* Article Content */
+  /* Article Details */
   .article-card { background: var(--card-bg); border-radius: var(--radius); padding: 40px 5%; box-shadow: var(--shadow); }
   .article-title { font-size: 2.8rem; font-weight: 800; color: var(--primary); line-height: 1.3; margin: 15px 0 20px; }
   .article-meta { font-size: 1rem; color: var(--text-muted); padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; margin-bottom: 30px; font-weight: 600; }
   .article-content { font-size: 1.25rem; line-height: 1.9; color: #334155; }
   .article-content img { width: 100%; max-width: 100%; height: auto; border-radius: 12px; margin: 25px 0; box-shadow: var(--shadow); }
 
-  /* --- AD CAROUSEL (Smart Slider) --- */
+  /* --- AD CAROUSEL --- */
   .ad-slider-container { width: 100%; background: #fff; border-radius: 12px; box-shadow: var(--shadow); padding: 15px; margin: 30px 0; border: 1px solid #e2e8f0; position: relative; overflow: hidden; text-align: center; }
   .ad-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; font-weight: 700; letter-spacing: 1px; }
   .ad-slide { display: none; width: 100%; animation: fade 0.5s; }
@@ -157,9 +199,10 @@ const globalCSS = `
   @keyframes floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
   @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+  @keyframes floatDrift { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(30px, 15px) rotate(2deg); } }
 `;
 
-// --- CLIENT SCRIPTS (Includes Ad Carousel Logic) ---
+// --- CLIENT SCRIPTS (Ad Logic & Time) ---
 const generateGlobalScripts = (postsData) => `
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -168,7 +211,6 @@ const generateGlobalScripts = (postsData) => `
     async function trackAdView(id) { await db.rpc('increment_ad_view', { row_id: id }); }
     async function trackAdClick(id, url) { await db.rpc('increment_ad_click', { row_id: id }); if(url) window.open(url, '_blank'); }
     
-    // Live Time
     function updateLiveTime() {
       const el = document.getElementById('live-time');
       if(!el) return;
@@ -180,14 +222,12 @@ const generateGlobalScripts = (postsData) => `
     }
     setInterval(updateLiveTime, 1000); window.addEventListener('DOMContentLoaded', updateLiveTime);
 
-    // Progress Bar
     window.onscroll = function() {
       const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
       const bar = document.getElementById("progress-bar");
       if(bar) bar.style.width = ((document.body.scrollTop || document.documentElement.scrollTop) / height) * 100 + "%";
     };
 
-    // Smart Search
     const allPosts = ${JSON.stringify(postsData)};
     function handleSearch() {
       const input = document.getElementById('searchInput').value.toLowerCase();
@@ -220,9 +260,8 @@ const generateGlobalScripts = (postsData) => `
       slides[slideIndex-1].className += " active";
       if(dots.length > 0) dots[slideIndex-1].className += " active";
 
-      // If current slide has an iframe (video), pause the slider for 60 seconds. Otherwise 5 seconds.
       let hasIframe = slides[slideIndex-1].querySelector('iframe');
-      let delay = hasIframe ? 60000 : 5000;
+      let delay = hasIframe ? 60000 : 5000; // 60s for video, 5s for image
       
       clearTimeout(slideInterval);
       slideInterval = setTimeout(showSlides, delay);
@@ -237,14 +276,22 @@ const generateGlobalScripts = (postsData) => `
 `;
 
 // --- HTML COMPONENTS ---
-const generateSEO = (title, pathStr) => `<title>${escapeAttr(title)}</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/png" href="394000910_240835825678358_5228163708350764536_n-removebg-preview.png">`;
+const generateSEO = (title, pathStr) => `<title>${escapeAttr(title)}</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/png" href="${AVATAR_URL}">`;
 
 const generateHeader = () => `
   <div id="progress-bar"></div>
   <header class="main-header">
+    
+    <!-- Floating Background Marathi Vectors -->
+    <div class="floating-vector f-1">माहिती</div>
+    <div class="floating-vector f-2">शासकीय योजना</div>
+    <div class="floating-vector f-3">माझा हक्क</div>
+    <div class="floating-vector f-4">नोकरी</div>
+    <div class="floating-vector f-5">शासन आपल्या दारी</div>
+
     <div class="header-container">
       <a href="${SITE_BASE}/" class="custom-brand">
-        <img src="394000910_240835825678358_5228163708350764536_n-removebg-preview.png" alt="Vitthal Speaks Avatar" class="brand-avatar">
+        <img src="${AVATAR_URL}" alt="Vitthal Speaks Avatar" class="brand-avatar">
         <div class="brand-text">VitthalSpeaks<span class="brand-tld">.com</span></div>
       </a>
       
@@ -273,11 +320,8 @@ const generateHeader = () => `
   </div>
 `;
 
-// Creates the Smart Ad Carousel HTML
 const generateAdCarousel = (ads, location, postSlug = null) => {
   if (!ads || ads.length === 0) return '';
-  
-  // Filter active ads based on display rules
   const activeAds = ads.filter(ad => {
     const rule = ad.display_rule || 'all';
     if (rule === 'all') return true;
@@ -290,28 +334,15 @@ const generateAdCarousel = (ads, location, postSlug = null) => {
   });
 
   if (activeAds.length === 0) return '';
-
   let slidesHtml = activeAds.map((ad, i) => {
     let media = ad.media_type === 'youtube' 
       ? `<iframe class="ad-media-yt" src="${getYouTubeEmbedUrl(ad.media_url)}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
       : `<img src="${escapeAttr(ad.media_url)}" class="ad-media-img" onclick="trackAdClick(${ad.id}, '${escapeAttr(ad.target_url) || ''}')">`;
-    
-    return `
-      <div class="ad-slide">
-        ${media}
-        <script>window.addEventListener('DOMContentLoaded', () => trackAdView(${ad.id}));</script>
-      </div>`;
+    return `<div class="ad-slide">${media}<script>window.addEventListener('DOMContentLoaded', () => trackAdView(${ad.id}));</script></div>`;
   }).join('');
-
   let dotsHtml = activeAds.length > 1 ? `<div class="ad-dots">` + activeAds.map((_, i) => `<span class="ad-dot" onclick="currentSlide(${i + 1})"></span>`).join('') + `</div>` : '';
 
-  return `
-    <div class="ad-slider-container">
-      <div class="ad-label">प्रायोजित (Sponsored)</div>
-      ${slidesHtml}
-      ${dotsHtml}
-    </div>
-  `;
+  return `<div class="ad-slider-container"><div class="ad-label">प्रायोजित (Sponsored)</div>${slidesHtml}${dotsHtml}</div>`;
 };
 
 // --- CORE BUILDER ---
@@ -328,7 +359,6 @@ async function buildSite() {
   if (posts) {
     posts.forEach((post) => {
       const postAdsHtml = generateAdCarousel(ads, 'post', post.slug);
-      
       let relatedHtml = posts.filter(p => p.id !== post.id).slice(0, 6).map(p => `
         <a href="${SITE_BASE}/${p.slug}" class="post-card" style="margin-bottom: 20px; border-radius: 10px;">
           <div class="card-img-wrap" style="height: 120px;"><img src="${extractImg(p.content)}"></div>
@@ -379,7 +409,7 @@ async function buildSite() {
     fs.writeFileSync(path.join(rootPath, 'index.html'), indexHtml);
   }
 
-  // 3. Generate 404 Page (With 3 Suggested Posts)
+  // 3. Generate 404 Page (With Suggested Posts)
   let suggestedHtml = '';
   if (posts && posts.length > 0) {
     suggestedHtml = posts.slice(0, 3).map(p => `
