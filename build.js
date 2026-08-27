@@ -46,7 +46,7 @@ function getYouTubeEmbedUrl(url) {
   } catch(e) { return url; }
 }
 
-// --- GLOBAL CSS (Mobile Scrolling/Wobble Fixes Applied) ---
+// --- GLOBAL CSS ---
 const globalCSS = `
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap');
   
@@ -73,9 +73,9 @@ const globalCSS = `
     max-width: 100%;
     margin: 0; 
     padding: 0; 
-    overflow-x: hidden; /* Ensures absolutely no horizontal scroll */
-    overscroll-behavior-x: none; /* Stops bounce effect on mobile */
-    touch-action: pan-y; /* Only allows vertical scrolling finger actions */
+    overflow-x: hidden; 
+    overscroll-behavior-x: none; 
+    touch-action: pan-y; 
   }
 
   body { 
@@ -85,22 +85,21 @@ const globalCSS = `
     line-height: 1.7; 
   }
 
-  /* Secure media bounds */
   img, iframe, video { max-width: 100%; height: auto; display: block; border: none; }
   a { text-decoration: none; color: inherit; }
   
-  /* Flex/Grid Children safety to prevent pushing layouts */
   .article-main, .article-sidebar, .card-content, .brand-text-wrapper, .search-wrapper { min-width: 0; }
   
   #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-yellow); width: 0%; z-index: 9999; }
 
-  /* --- COMPACT HEADER --- */
+  /* --- COMPACT HEADER (Not Sticky, scrolls away) --- */
   .main-header { background: #fff; border-bottom: 1px solid #e2e8f0; width: 100%; }
   .header-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 4%; max-width: 1600px; margin: 0 auto; width: 100%; }
   
   .custom-brand { display: flex; align-items: center; gap: 12px; }
   .brand-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background-color: var(--accent-orange); border: 2px solid var(--primary-dark); flex-shrink: 0; }
   
+  .brand-text-wrapper { display: flex; flex-direction: column; justify-content: center; }
   .brand-text { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--primary-dark); line-height: 1; display: flex; align-items: baseline; gap: 2px; margin-bottom: 4px; flex-wrap: wrap; }
   .brand-tld { font-size: 0.85rem; font-weight: 600; color: var(--primary); }
   .brand-tagline { font-size: 0.8rem; font-weight: 700; color: var(--primary); overflow-wrap: break-word; }
@@ -110,13 +109,14 @@ const globalCSS = `
   .datetime-box { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; white-space: nowrap; }
   
   .search-wrapper { position: relative; width: 100%; max-width: 300px; }
-  .search-input { width: 100%; padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 20px; outline: none; font-size: 0.9rem; background: #f8fafc; }
+  /* iOS Zoom Fix: font-size strictly set to 16px */
+  .search-input { width: 100%; padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 20px; outline: none; font-size: 16px !important; background: #f8fafc; }
   .search-input:focus { border-color: var(--primary); background: #fff; }
   .search-results { display: none; position: absolute; top: 40px; left: 0; right: 0; background: #fff; box-shadow: var(--shadow); border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 1001; }
   .search-result-item { padding: 10px 15px; border-bottom: 1px solid #f1f5f9; display: block; font-size: 0.85rem; font-weight: 600; color: var(--primary); overflow-wrap: break-word; }
   .search-result-item:hover { background: #f8fafc; color: var(--accent-orange); }
 
-  /* --- STICKY NAVIGATION --- */
+  /* --- STICKY NAVIGATION (This stays at the top always) --- */
   .nav-bar { background: var(--primary-dark); color: #fff; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid var(--accent-yellow); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; }
   .horizontal-nav { display: flex; justify-content: flex-start; gap: 30px; width: 100%; max-width: 1600px; padding: 0 4%; margin: 0 auto; }
   .horizontal-nav a { font-size: 0.95rem; font-weight: 600; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
@@ -133,12 +133,13 @@ const globalCSS = `
   .section-title { font-size: 1.4rem; font-weight: 800; border-bottom: 3px solid var(--accent-yellow); padding-bottom: 4px; margin: 0 0 20px; color: var(--primary-dark); display: inline-block; }
   
   .article-layout { display: flex; flex-direction: column; gap: 30px; width: 100%; }
-  .article-main { flex: 1; width: 100%; }
+  .article-main { flex: 1; min-width: 0; width: 100%; }
   .article-sidebar { width: 100%; display: block; } 
   
   @media (min-width: 1024px) {
     .article-layout { flex-direction: row; align-items: flex-start; }
     .article-main { flex: 3; } 
+    /* Sidebar sticky spacing accounts for the nav bar */
     .article-sidebar { flex: 1; min-width: 320px; max-width: 400px; position: sticky; top: 60px; max-height: calc(100vh - 80px); overflow-y: auto; padding-right: 10px; }
   }
 
@@ -156,8 +157,6 @@ const globalCSS = `
   .article-card { background: var(--card-bg); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); width: 100%; overflow-x: hidden; }
   .article-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); line-height: 1.3; margin: 0 0 15px; overflow-wrap: break-word; }
   .article-meta { font-size: 0.95rem; color: var(--text-muted); padding-bottom: 15px; border-bottom: 1px solid #e2e8f0; margin-bottom: 25px; font-weight: 600; }
-  
-  /* Safe text breaking for article content */
   .article-content { font-size: 1.15rem; line-height: 1.8; color: #333; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
   .article-content img { width: 100%; height: auto; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow); }
 
@@ -179,7 +178,7 @@ const globalCSS = `
   .ad-slide.active { display: block; }
   
   .ad-media-img { width: 100%; height: auto; max-height: 450px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto; }
-  .ad-media-yt { width: 100%; aspect-ratio: 16/9; display: block; margin: 0 auto; }
+  .ad-media-yt { width: 100%; aspect-ratio: 16/9; border: none; display: block; margin: 0 auto; }
   
   .ad-dots { position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10; }
   .ad-dot { height: 10px; width: 10px; background-color: rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; }
@@ -190,17 +189,13 @@ const globalCSS = `
     .header-top { flex-direction: column; gap: 12px; padding: 15px 4%; align-items: flex-start; }
     .header-right { width: 100%; justify-content: center; }
     .search-wrapper { max-width: 100%; }
-    
     .datetime-box { display: none; }
     
-    /* Safely scale navigation */
     .horizontal-nav { justify-content: space-between; gap: 5px; padding: 0 4%; }
     .horizontal-nav a { font-size: 0.85rem; padding: 10px 0; }
     
     .article-title { font-size: 1.7rem; }
     .article-card { padding: 20px; }
-    
-    /* Force Grid to Single Column on Mobile */
     .news-grid { grid-template-columns: 1fr; }
   }
 
@@ -255,6 +250,39 @@ const generateGlobalScripts = (postsData) => `
     }
     document.addEventListener('click', e => { if (!e.target.closest('.search-wrapper')) document.getElementById('searchResults').style.display = 'none'; });
 
+    // Animated Placeholder Logic
+    const searchTerms = ["🔍 माहिती...", "🔍 लाडकी बहीण योजना...", "🔍 नोकरी...", "🔍 शासकीय योजना...", "🔍 शोधा..."];
+    let termIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    
+    function typePlaceholder() {
+      const typeElement = document.getElementById('searchInput');
+      if (!typeElement) return;
+      const currentTerm = searchTerms[termIndex];
+      
+      if (isDeleting) {
+        typeElement.setAttribute('placeholder', currentTerm.substring(0, charIndex - 1));
+        charIndex--;
+      } else {
+        typeElement.setAttribute('placeholder', currentTerm.substring(0, charIndex + 1));
+        charIndex++;
+      }
+
+      let typeSpeed = isDeleting ? 40 : 100;
+
+      if (!isDeleting && charIndex === currentTerm.length) {
+        typeSpeed = 2000;
+        isDeleting = true;
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        termIndex = (termIndex + 1) % searchTerms.length;
+        typeSpeed = 400;
+      }
+      setTimeout(typePlaceholder, typeSpeed);
+    }
+    window.addEventListener('DOMContentLoaded', typePlaceholder);
+
     function showToast() {
       const x = document.getElementById("toast");
       x.className = "toast show";
@@ -291,7 +319,11 @@ const generateGlobalScripts = (postsData) => `
 `;
 
 // --- HTML COMPONENTS ---
-const generateSEO = (title, pathStr) => `<title>${escapeAttr(title)}</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/jpeg" href="${FAVICON_URL}">`;
+const generateSEO = (title, pathStr) => `
+  <title>${escapeAttr(title)}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="icon" type="image/jpeg" href="${FAVICON_URL}">
+`;
 
 const generateHeader = () => `
   <div id="progress-bar"></div>
@@ -308,7 +340,7 @@ const generateHeader = () => `
       <div class="header-right">
         <div class="datetime-box" id="live-time">लोड होत आहे...</div>
         <div class="search-wrapper">
-          <input type="text" id="searchInput" class="search-input" placeholder="🔍 शोधा..." onkeyup="handleSearch()">
+          <input type="text" id="searchInput" class="search-input">
           <div id="searchResults" class="search-results"></div>
         </div>
       </div>
