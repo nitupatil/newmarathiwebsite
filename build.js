@@ -34,26 +34,19 @@ const extractImg = (html) => {
   return match ? match[1] : 'https://placehold.co/600x400?text=News';
 };
 
-// Advanced YouTube URL Parser (Handles lists, time stamps, and standard watch URLs)
+// Advanced YouTube URL Parser
 function getYouTubeEmbedUrl(url) {
   if (!url) return '';
   try {
     let videoId = '';
-    if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1].split('?')[0];
-    } else if (url.includes('watch')) {
-      const urlParams = new URLSearchParams(url.split('?')[1]);
-      videoId = urlParams.get('v');
-    } else if (url.includes('embed/')) {
-      return url;
-    }
+    if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0];
+    else if (url.includes('watch')) videoId = new URLSearchParams(url.split('?')[1]).get('v');
+    else if (url.includes('embed/')) return url;
     return videoId ? `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0` : url;
-  } catch(e) {
-    return url;
-  }
+  } catch(e) { return url; }
 }
 
-// --- GLOBAL CSS (Minimalistic Black, Yellow, Dark Blue Theme) ---
+// --- GLOBAL CSS (Minimal, Fast, Space-Saving) ---
 const globalCSS = `
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap');
   
@@ -74,52 +67,46 @@ const globalCSS = `
   body { font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif; background: var(--bg-light); color: var(--text-main); margin: 0; padding: 0; line-height: 1.7; overflow-x: hidden; }
   a { text-decoration: none; color: inherit; }
   
-  #progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: var(--accent-yellow); width: 0%; z-index: 9999; }
+  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-yellow); width: 0%; z-index: 9999; }
 
-  /* --- MINIMAL HEADER --- */
-  .main-header { background: #fff; border-bottom: 3px solid var(--accent-yellow); position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow); }
-  .header-top { display: flex; justify-content: space-between; align-items: center; padding: 15px 3%; max-width: 1600px; margin: 0 auto; }
+  /* --- COMPACT HEADER --- */
+  .main-header { background: #fff; border-bottom: 1px solid #e2e8f0; }
+  .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 3%; max-width: 1600px; margin: 0 auto; }
   
-  .custom-brand { display: flex; align-items: center; gap: 15px; }
-  .brand-avatar { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; background-color: var(--accent-orange); border: 2px solid var(--primary-dark); }
+  .custom-brand { display: flex; align-items: center; gap: 12px; }
+  .brand-avatar { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; background-color: var(--accent-orange); border: 2px solid var(--primary-dark); flex-shrink: 0; }
   
-  .brand-text-wrapper { display: flex; flex-direction: column; }
-  .brand-text { font-family: 'Poppins', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); line-height: 1.1; display: flex; align-items: baseline; gap: 4px; }
-  .brand-tld { font-size: 1rem; font-weight: 600; color: var(--primary); }
-  .brand-tagline { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-top: 4px; }
-  .brand-date { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+  .brand-text-wrapper { display: flex; flex-direction: column; justify-content: center; }
+  .brand-text { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--primary-dark); line-height: 1; display: flex; align-items: baseline; gap: 2px; margin-bottom: 4px; }
+  .brand-tld { font-size: 0.9rem; font-weight: 600; color: var(--primary); }
+  .brand-tagline { font-size: 0.85rem; font-weight: 700; color: var(--primary); }
 
-  .header-right { display: flex; align-items: center; }
+  /* Search & Date */
+  .header-right { display: flex; align-items: center; gap: 20px; }
+  .datetime-box { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
   
-  /* Search Box */
-  .search-wrapper { position: relative; width: 100%; min-width: 280px; }
-  .search-input { width: 100%; padding: 10px 20px; border: 2px solid #e2e8f0; border-radius: 30px; outline: none; font-size: 0.95rem; background: #f8fafc; box-sizing: border-box; }
+  .search-wrapper { position: relative; width: 100%; min-width: 240px; }
+  .search-input { width: 100%; padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 20px; outline: none; font-size: 0.9rem; background: #f8fafc; box-sizing: border-box; }
   .search-input:focus { border-color: var(--primary); background: #fff; }
-  .search-results { display: none; position: absolute; top: 45px; left: 0; right: 0; background: #fff; box-shadow: var(--shadow); border-radius: 8px; max-height: 350px; overflow-y: auto; z-index: 1001; }
-  .search-result-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; display: block; font-size: 0.9rem; font-weight: 600; color: var(--primary); }
+  .search-results { display: none; position: absolute; top: 40px; left: 0; right: 0; background: #fff; box-shadow: var(--shadow); border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 1001; }
+  .search-result-item { padding: 10px 15px; border-bottom: 1px solid #f1f5f9; display: block; font-size: 0.85rem; font-weight: 600; color: var(--primary); }
   .search-result-item:hover { background: #f8fafc; color: var(--accent-orange); }
 
-  /* Plain Text Categories below header top */
-  .plain-categories { background: #f8fafc; text-align: center; padding: 8px; font-size: 0.95rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid #e2e8f0; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-  .plain-categories span { cursor: pointer; }
-  .plain-categories span:hover { color: var(--accent-orange); }
-
-  /* Navigation Bar */
-  .nav-bar { background: var(--primary-dark); color: #fff; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); }
-  .horizontal-nav { display: flex; padding: 0 3%; gap: 25px; }
-  .horizontal-nav a { font-size: 1rem; font-weight: 600; padding: 12px 0; transition: color 0.2s; }
+  /* --- STICKY NAVIGATION --- */
+  .nav-bar { background: var(--primary-dark); color: #fff; display: flex; justify-content: flex-start; align-items: center; border-bottom: 3px solid var(--accent-yellow); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+  .horizontal-nav { display: flex; padding: 0 3%; gap: 30px; width: 100%; max-width: 1600px; margin: 0 auto; }
+  .horizontal-nav a { font-size: 0.95rem; font-weight: 600; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
   .horizontal-nav a:hover { color: var(--accent-yellow); }
-  .datetime-box { padding: 12px 3%; font-size: 0.9rem; font-weight: 600; color: var(--accent-yellow); }
 
   /* Ticker */
-  .ticker-wrap { display: flex; align-items: center; background: #fff; padding: 8px 3%; border-bottom: 1px solid #e2e8f0; font-size: 0.95rem; }
-  .ticker-label { background: var(--accent-red); color: #fff; font-weight: 700; padding: 4px 12px; border-radius: 4px; margin-right: 20px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .ticker-wrap { display: flex; align-items: center; background: #fff; padding: 6px 3%; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+  .ticker-label { background: var(--accent-red); color: #fff; font-weight: 700; padding: 2px 10px; border-radius: 4px; margin-right: 20px; display: flex; align-items: center; flex-shrink: 0; }
   .ticker-move { display: inline-block; animation: ticker 25s linear infinite; white-space: nowrap; padding-left: 100%; }
   .ticker-item { margin-right: 40px; font-weight: 600; color: var(--primary-dark); }
 
   /* --- LAYOUT --- */
-  .container { width: 96%; max-width: 1600px; margin: 30px auto; min-height: 70vh; }
-  .section-title { font-size: 1.5rem; font-weight: 800; border-bottom: 3px solid var(--accent-yellow); padding-bottom: 6px; margin: 0 0 25px; color: var(--primary-dark); display: inline-block; }
+  .container { width: 96%; max-width: 1600px; margin: 25px auto; min-height: 70vh; }
+  .section-title { font-size: 1.4rem; font-weight: 800; border-bottom: 3px solid var(--accent-yellow); padding-bottom: 4px; margin: 0 0 20px; color: var(--primary-dark); display: inline-block; }
   
   .article-layout { display: flex; flex-direction: column; gap: 30px; }
   .article-main { flex: 1; min-width: 0; }
@@ -128,67 +115,63 @@ const globalCSS = `
   @media (min-width: 1024px) {
     .article-layout { flex-direction: row; align-items: flex-start; }
     .article-main { flex: 3; } 
-    .article-sidebar { flex: 1; min-width: 320px; max-width: 400px; display: block; position: sticky; top: 180px; max-height: calc(100vh - 200px); overflow-y: auto; padding-right: 15px; }
+    .article-sidebar { flex: 1; min-width: 320px; max-width: 400px; display: block; position: sticky; top: 70px; max-height: calc(100vh - 90px); overflow-y: auto; padding-right: 10px; }
   }
 
   /* Grid & Cards */
-  .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
   .post-card { background: var(--card-bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
-  .post-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-  .card-img-wrap { height: 180px; overflow: hidden; }
+  .post-card:hover { transform: translateY(-4px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+  .card-img-wrap { height: 160px; overflow: hidden; }
   .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
   .post-card:hover .card-img-wrap img { transform: scale(1.05); }
   .card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
-  .card-title { font-size: 1.2rem; font-weight: 700; margin: 0 0 10px; line-height: 1.4; color: var(--primary-dark); }
+  .card-title { font-size: 1.1rem; font-weight: 700; margin: 0 0 8px; line-height: 1.4; color: var(--primary-dark); }
 
   /* Article Details */
-  .article-card { background: var(--card-bg); border-radius: var(--radius); padding: 35px 4%; box-shadow: var(--shadow); }
-  .article-title { font-size: 2.5rem; font-weight: 800; color: var(--primary-dark); line-height: 1.3; margin: 10px 0 20px; }
-  .article-meta { font-size: 1rem; color: var(--text-muted); padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; margin-bottom: 30px; font-weight: 600; }
-  .article-content { font-size: 1.2rem; line-height: 1.8; color: #333; }
-  .article-content img { width: 100%; max-width: 100%; height: auto; border-radius: 8px; margin: 25px 0; }
+  .article-card { background: var(--card-bg); border-radius: var(--radius); padding: 30px 4%; box-shadow: var(--shadow); }
+  .article-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); line-height: 1.3; margin: 0 0 15px; }
+  .article-meta { font-size: 0.95rem; color: var(--text-muted); padding-bottom: 15px; border-bottom: 1px solid #e2e8f0; margin-bottom: 25px; font-weight: 600; }
+  .article-content { font-size: 1.15rem; line-height: 1.8; color: #333; }
+  .article-content img { width: 100%; max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow); }
 
-  /* Share Section at bottom of post */
-  .share-section { margin-top: 30px; padding: 20px; background: #fafafa; border-radius: 8px; border: 1px solid #eee; text-align: center; }
+  /* Share Section */
+  .share-section { margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
   .share-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
-  .share-btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 1rem; color: #fff; cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; }
+  .share-btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 0.95rem; color: #fff; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px; }
   .btn-wa { background: #25D366; } 
   .btn-copy { background: var(--primary); }
 
   /* Toast Notification */
-  .toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 600; font-size: 1rem; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
+  .toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 600; font-size: 0.95rem; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
   .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
   /* --- AD CAROUSEL --- */
-  .ad-slider-container { width: 100%; background: #000; border-radius: 8px; box-shadow: var(--shadow); margin: 30px 0; position: relative; overflow: hidden; text-align: center; }
+  .ad-slider-container { width: 100%; background: #000; border-radius: 8px; box-shadow: var(--shadow); margin: 25px 0; position: relative; overflow: hidden; text-align: center; }
   .ad-label { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: #fff; padding: 2px 8px; font-size: 0.7rem; border-radius: 4px; z-index: 10; }
   .ad-slide { display: none; width: 100%; animation: fade 0.5s; background: #000; }
   .ad-slide.active { display: block; }
-  /* Image Ad Fix */
-  .ad-media-img { width: 100%; max-width: 100%; height: auto; max-height: 500px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto; }
-  /* YouTube Ad Fix */
+  
+  .ad-media-img { width: 100%; max-width: 100%; height: auto; max-height: 450px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto; }
   .ad-media-yt { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
   
   .ad-dots { position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10; }
-  .ad-dot { height: 10px; width: 10px; background-color: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; transition: background-color 0.3s; }
+  .ad-dot { height: 10px; width: 10px; background-color: rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; }
   .ad-dot.active { background-color: var(--accent-yellow); }
 
-  /* Mobile Adjustments */
+  /* Mobile View Adjustments */
   @media (max-width: 768px) {
-    .header-top { flex-direction: column; gap: 15px; text-align: center; }
-    .custom-brand { flex-direction: column; gap: 8px; }
-    .brand-text-wrapper { align-items: center; }
-    .header-right { width: 100%; justify-content: center; }
+    .header-top { flex-direction: column; gap: 15px; padding: 15px; align-items: flex-start; }
+    .header-right { width: 100%; }
     .search-wrapper { min-width: 100%; }
     
-    .nav-bar { flex-direction: column; }
-    .horizontal-nav { width: 100%; justify-content: space-between; padding: 0 15px; overflow-x: auto; box-sizing: border-box; }
-    .horizontal-nav a { font-size: 0.95rem; padding: 10px 5px; }
-    
-    /* HIDE TIME ON MOBILE TO SAVE SPACE */
+    /* Hide Date on Mobile */
     .datetime-box { display: none; }
     
-    .article-title { font-size: 1.8rem; }
+    .horizontal-nav { justify-content: space-between; gap: 10px; }
+    .horizontal-nav a { font-size: 0.9rem; padding: 12px 5px; }
+    
+    .article-title { font-size: 1.6rem; }
     .article-card { padding: 20px 15px; }
   }
 
@@ -207,7 +190,7 @@ const generateGlobalScripts = (postsData) => `
     
     function updateLiveTime() {
       const el = document.getElementById('live-time');
-      const headerDateEl = document.getElementById('header-date');
+      if(!el) return;
       const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
       const days = ['रविवार', 'सोमवार', 'मंगळवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
       const months = ['जानेवारी', 'फेब्रुवारी', 'मार्च', 'एप्रिल', 'मे', 'जून', 'जुलै', 'ऑगस्ट', 'सप्टेंबर', 'ऑक्टोबर', 'नोव्हेंबर', 'डिसेंबर'];
@@ -215,12 +198,10 @@ const generateGlobalScripts = (postsData) => `
       const dayName = days[now.getDay()];
       const dayNum = String(now.getDate()).replace(/\\d/g, d => '०१२३४५६७८९'[d]);
       const year = String(now.getFullYear()).replace(/\\d/g, d => '०१२३४५६७८९'[d]);
-      
       const mHours = String(now.getHours() % 12 || 12).replace(/\\d/g, d => '०१२३४५६७८९'[d]);
       const mMin = String(now.getMinutes()).padStart(2, '0').replace(/\\d/g, d => '०१२३४५६७८९'[d]);
       
-      if(el) el.innerText = \`🕒 \${dayName} | \${mHours}:\${mMin}\`;
-      if(headerDateEl) headerDateEl.innerText = \`\${dayName}, \${dayNum} \${months[now.getMonth()]} \${year}\`;
+      el.innerText = \`📅 \${dayNum} \${months[now.getMonth()]} \${year} | 🕒 \${mHours}:\${mMin}\`;
     }
     setInterval(updateLiveTime, 1000); window.addEventListener('DOMContentLoaded', updateLiveTime);
 
@@ -251,16 +232,12 @@ const generateGlobalScripts = (postsData) => `
       x.className = "toast show";
       setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
     }
-    function copyCurrentLink() {
-      navigator.clipboard.writeText(window.location.href);
-      showToast();
-    }
+    function copyCurrentLink() { navigator.clipboard.writeText(window.location.href); showToast(); }
     function shareWhatsApp(title) {
-      const text = encodeURIComponent(title + " - येथे वाचा: ") + encodeURIComponent(window.location.href);
-      window.open('https://api.whatsapp.com/send?text=' + text, '_blank');
+      window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(title + " - येथे वाचा: ") + encodeURIComponent(window.location.href), '_blank');
     }
 
-    // Ad Carousel Logic
+    // Ad Carousel
     let slideIndex = 0;
     let slideInterval;
     function showSlides() {
@@ -283,11 +260,6 @@ const generateGlobalScripts = (postsData) => `
       clearTimeout(slideInterval);
       slideInterval = setTimeout(showSlides, delay);
     }
-    function currentSlide(n) {
-      slideIndex = n - 1;
-      clearTimeout(slideInterval);
-      showSlides();
-    }
     window.addEventListener('DOMContentLoaded', () => { if(document.getElementsByClassName("ad-slide").length > 0) showSlides(); });
   </script>
 `;
@@ -299,25 +271,23 @@ const generateHeader = () => `
   <div id="progress-bar"></div>
   <header class="main-header">
     <div class="header-top">
+      
       <a href="${SITE_BASE}/" class="custom-brand">
         <img src="${AVATAR_URL}" alt="Vitthal Speaks" class="brand-avatar">
         <div class="brand-text-wrapper">
           <div class="brand-text">VitthalSpeaks<span class="brand-tld">.com</span></div>
           <div class="brand-tagline">शासकीय योजना • माहिती • ग्रामपंचायत</div>
-          <div class="brand-date" id="header-date"></div>
         </div>
       </a>
       
       <div class="header-right">
+        <div class="datetime-box" id="live-time">लोड होत आहे...</div>
         <div class="search-wrapper">
-          <input type="text" id="searchInput" class="search-input" placeholder="🔍 वेबसाइटवर शोधा..." onkeyup="handleSearch()">
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 शोधा..." onkeyup="handleSearch()">
           <div id="searchResults" class="search-results"></div>
         </div>
       </div>
-    </div>
-    
-    <div class="plain-categories">
-      <span>माहिती</span> • <span>शासकीय योजना</span> • <span>नोकरी</span> • <span>शिक्षण</span> • <span>बातम्या</span>
+
     </div>
   </header>
   
@@ -327,11 +297,10 @@ const generateHeader = () => `
       <a href="${SITE_BASE}/contact">📞 संपर्क | Contact</a>
       <a href="${SITE_BASE}/privacy-policy">🔒 गोपनीयता | Privacy</a>
     </div>
-    <div class="datetime-box" id="live-time">लोड होत आहे...</div>
   </div>
 `;
 
-// Advanced Ad Generator
+// Ad Generator (Handles YouTube perfectly now)
 const generateAdCarousel = (ads, location, postSlug = null) => {
   if (!ads || ads.length === 0) return '';
   const activeAds = ads.filter(ad => {
@@ -348,7 +317,6 @@ const generateAdCarousel = (ads, location, postSlug = null) => {
   if (activeAds.length === 0) return '';
   
   let slidesHtml = activeAds.map((ad, i) => {
-    // Smartly detect if it's a youtube link even if media_type isn't strictly set
     const isYT = ad.media_url.includes('youtube.com') || ad.media_url.includes('youtu.be') || ad.media_type === 'youtube';
     let media = isYT
       ? `<iframe class="ad-media-yt" src="${getYouTubeEmbedUrl(ad.media_url)}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
@@ -356,8 +324,7 @@ const generateAdCarousel = (ads, location, postSlug = null) => {
     return `<div class="ad-slide">${media}<script>window.addEventListener('DOMContentLoaded', () => trackAdView(${ad.id}));</script></div>`;
   }).join('');
   
-  let dotsHtml = activeAds.length > 1 ? `<div class="ad-dots">` + activeAds.map((_, i) => `<span class="ad-dot" onclick="currentSlide(${i + 1})"></span>`).join('') + `</div>` : '';
-
+  let dotsHtml = activeAds.length > 1 ? `<div class="ad-dots">` + activeAds.map((_, i) => `<span class="ad-dot"></span>`).join('') + `</div>` : '';
   return `<div class="ad-slider-container"><div class="ad-label">प्रायोजित</div>${slidesHtml}${dotsHtml}</div>`;
 };
 
@@ -377,9 +344,9 @@ async function buildSite() {
       const postAdsHtml = generateAdCarousel(ads, 'post', post.slug);
       let relatedHtml = posts.filter(p => p.id !== post.id).slice(0, 6).map(p => `
         <a href="${SITE_BASE}/${p.slug}" class="post-card" style="margin-bottom: 20px; border-radius: 8px;">
-          <div class="card-img-wrap" style="height: 120px;"><img src="${extractImg(p.content)}"></div>
+          <div class="card-img-wrap" style="height: 100px;"><img src="${extractImg(p.content)}"></div>
           <div class="card-content" style="padding: 12px;">
-            <h4 style="font-size: 1.05rem; margin:0 0 5px; color:var(--primary-dark);">${escapeAttr(p.title)}</h4>
+            <h4 style="font-size: 1rem; margin:0; color:var(--primary-dark);">${escapeAttr(p.title)}</h4>
           </div>
         </a>`).join('');
 
@@ -394,7 +361,7 @@ async function buildSite() {
               <div class="article-content">${post.content}</div>
               
               <div class="share-section">
-                <h4 style="margin-top:0; margin-bottom:10px; font-size:1.1rem; color:var(--primary-dark);">ही माहिती इतरांसोबत शेअर करा</h4>
+                <h4 style="margin-top:0; margin-bottom:10px; font-size:1.05rem; color:var(--primary-dark);">ही माहिती इतरांसोबत शेअर करा</h4>
                 <div class="share-buttons">
                   <button onclick="shareWhatsApp('${escapeAttr(post.title)}')" class="share-btn btn-wa">📱 WhatsApp वर पाठवा</button>
                   <button onclick="copyCurrentLink()" class="share-btn btn-copy">🔗 लिंक कॉपी करा</button>
@@ -423,7 +390,7 @@ async function buildSite() {
         <div class="card-img-wrap"><img src="${extractImg(p.content)}" alt="${escapeAttr(p.title)}"></div>
         <div class="card-content">
           <h3 class="card-title">${escapeAttr(p.title)}</h3>
-          <div style="margin-top:auto; font-size: 0.9rem; color:var(--text-muted); font-weight:600;">${formatMarathiDate(p.published_at || p.created_at)}</div>
+          <div style="margin-top:auto; font-size: 0.85rem; color:var(--text-muted); font-weight:600;">${formatMarathiDate(p.published_at || p.created_at)}</div>
         </div>
       </a>`).join('');
 
@@ -433,7 +400,7 @@ async function buildSite() {
     fs.writeFileSync(path.join(rootPath, 'index.html'), indexHtml);
   }
 
-  // 3. Generate 404 Page (With Suggested Posts)
+  // 3. Generate 404 Page
   let suggestedHtml = '';
   if (posts && posts.length > 0) {
     suggestedHtml = posts.slice(0, 3).map(p => `
@@ -449,8 +416,8 @@ async function buildSite() {
     <div class="container" style="text-align: center; max-width: 800px; padding: 60px 20px;">
       <h1 style="color: var(--accent-red); font-size: 5rem; margin: 0; line-height:1;">४०४</h1>
       <h2 style="font-size: 2rem; color: var(--primary-dark);">माफ करा, ही पोस्ट उपलब्ध नाही.</h2>
-      <p style="color: var(--text-muted); font-size: 1.2rem; margin-bottom: 40px;">तुम्ही शोधत असलेली पोस्ट डिलीट केली गेली असू शकते किंवा लिंक चुकीची असू शकते.</p>
-      <a href="${SITE_BASE}/" style="background: var(--primary-dark); color: white; padding: 12px 30px; border-radius: 30px; font-weight: 700; font-size: 1.1rem;">मुख्यपृष्ठावर परत जा</a>
+      <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 40px;">तुम्ही शोधत असलेली पोस्ट डिलीट केली गेली असू शकते किंवा लिंक चुकीची असू शकते.</p>
+      <a href="${SITE_BASE}/" style="background: var(--primary-dark); color: white; padding: 12px 30px; border-radius: 30px; font-weight: 700; font-size: 1rem;">मुख्यपृष्ठावर परत जा</a>
     </div>
     <div class="container"><h3 class="section-title">📌 नवीनतम लेख वाचा</h3><div class="news-grid">${suggestedHtml}</div></div>
     </body></html>`;
