@@ -7,7 +7,7 @@ const SUPABASE_URL = 'https://ediqthdjnsrorcktldiu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaXF0aGRqbnNyb3Jja3RsZGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDMxMzQsImV4cCI6MjEwMzIxOTEzNH0.uYsfs-T7qR-2krUushlPI0tDqONTYU1AIzEIud-_BNM';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SITE_BASE = 'https://www.weebstudio.site/'; 
+const SITE_BASE = 'https://www.weebstudio.site'; 
 const FULL_SITE_URL = 'https://www.weebstudio.site' + SITE_BASE;
 const AVATAR_URL = 'https://i.ibb.co/BVw78vKq/394000910-240835825678358-5228163708350764536-n-removebg-preview.png';
 const FAVICON_URL = 'https://i.ibb.co/SwTxjYrw/394000910-240835825678358-5228163708350764536-n.jpg';
