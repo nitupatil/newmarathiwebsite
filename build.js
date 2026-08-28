@@ -7,8 +7,9 @@ const SUPABASE_URL = 'https://ediqthdjnsrorcktldiu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaXF0aGRqbnNyb3Jja3RsZGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDMxMzQsImV4cCI6MjEwMzIxOTEzNH0.uYsfs-T7qR-2krUushlPI0tDqONTYU1AIzEIud-_BNM';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SITE_BASE = ''; 
-const FULL_SITE_URL = 'https://vitthalspeaks.com' + SITE_BASE;
+// FIXED: Restored to point to your repository, fixing the 404s and Home Button
+const SITE_BASE = '/newmarathiwebsite'; 
+const FULL_SITE_URL = 'https://nitupatil.github.io' + SITE_BASE;
 const AVATAR_URL = 'https://i.ibb.co/BVw78vKq/394000910-240835825678358-5228163708350764536-n-removebg-preview.png';
 const FAVICON_URL = 'https://i.ibb.co/SwTxjYrw/394000910-240835825678358-5228163708350764536-n.jpg';
 
@@ -55,7 +56,9 @@ const globalCSS = `
   a { text-decoration: none; color: inherit; }
   
   #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-yellow); width: 0%; z-index: 10005; transition: width 0.1s; }
-  .main-header { background: #fff; border-bottom: 1px solid #e2e8f0; width: 100%; }
+  
+  /* FIXED: Main header given relative positioning & high z-index to float search above nav-bar */
+  .main-header { background: #fff; border-bottom: 1px solid #e2e8f0; width: 100%; position: relative; z-index: 10005; }
   .header-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 4%; max-width: 1600px; margin: 0 auto; width: 100%; }
   .custom-brand { display: flex; align-items: center; gap: 12px; }
   .brand-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background-color: var(--accent-orange); border: 2px solid var(--primary-dark); flex-shrink: 0; }
@@ -71,7 +74,7 @@ const globalCSS = `
   .search-wrapper { position: relative; width: 100%; max-width: 300px; }
   .search-input { width: 100%; padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 20px; outline: none; font-size: 16px !important; background: #f8fafc; transition: all 0.2s; }
   .search-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(0,31,63,0.1); }
-  .search-results { display: none; position: absolute; top: 45px; left: 0; right: 0; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; max-height: 350px; overflow-y: auto; z-index: 1001; border: 1px solid #e2e8f0; padding: 8px 0; }
+  .search-results { display: none; position: absolute; top: 45px; left: 0; right: 0; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; max-height: 350px; overflow-y: auto; border: 1px solid #e2e8f0; padding: 8px 0; }
   .search-result-item { padding: 10px 20px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; color: var(--text-main); border-bottom: 1px solid #f1f5f9; transition: background 0.2s; }
   .search-result-item:last-child { border-bottom: none; }
   .search-result-item:hover { background: #f8fafc; color: var(--accent-orange); }
@@ -138,10 +141,10 @@ const globalCSS = `
   .ad-next { right: 0; border-radius: 4px 0 0 4px; }
   .ad-prev:hover, .ad-next:hover { background-color: rgba(0,0,0,0.8); }
 
-  /* --- EDGE-TO-EDGE MOBILE VIEW REWRITE --- */
+  /* --- FIXED MOBILE VIEW: Edge-to-Edge, No Margins, No Box --- */
   @media (max-width: 768px) {
-    /* Make body white on mobile so card blends cleanly */
     body { background: #ffffff; }
+    
     .header-top { flex-direction: column; gap: 12px; padding: 15px 4%; align-items: flex-start; }
     .header-right { width: 100%; justify-content: center; }
     .search-wrapper { max-width: 100%; }
@@ -150,13 +153,13 @@ const globalCSS = `
     .horizontal-nav { justify-content: space-between; gap: 5px; padding: 0 4%; }
     .horizontal-nav a { font-size: 0.85rem; padding: 10px 0; }
     
-    /* Remove outer container margins and paddings for posts */
-    .container { padding: 0; margin: 0; }
+    /* Remove outer container margins */
+    .container { padding: 0; margin: 0; width: 100%; max-width: 100%; }
     .article-layout { gap: 0; }
     
-    /* Article Card sits flush to the screen */
+    /* Flat edge-to-edge Article Body */
     .article-card { 
-      padding: 20px 18px; 
+      padding: 20px 16px; 
       border-radius: 0; 
       box-shadow: none; 
       border: none; 
@@ -164,14 +167,28 @@ const globalCSS = `
     }
     .article-title { font-size: 1.8rem; margin-top: 10px; }
     
-    /* Adjust grid and sidebars to have normal reading padding */
-    .article-sidebar { padding: 20px 18px; }
-    .news-grid { padding: 0 18px; grid-template-columns: 1fr; margin-bottom: 30px; }
-    .section-title { margin-left: 18px; margin-right: 18px; }
+    /* Sidebar matching padding */
+    .article-sidebar { padding: 20px 16px; }
     
-    /* Ad slider adjustments for mobile edge */
-    .ad-slider-container { border-radius: 0; margin: 15px 0; }
-    .ad-media-img, .ad-media-yt { border-radius: 0; }
+    /* Flat Home Grid */
+    .news-grid { padding: 0; margin: 0; grid-template-columns: 1fr; gap: 0; }
+    
+    /* Flat Cards */
+    .post-card { 
+      border-radius: 0; 
+      border: none; 
+      border-bottom: 1px solid #e2e8f0; 
+      box-shadow: none; 
+      margin-bottom: 0;
+    }
+    .post-card:hover { transform: none; box-shadow: none; }
+    .card-img-wrap { height: 180px; border-radius: 0; }
+    
+    .section-title { margin: 20px 16px; }
+    
+    /* Ads Edge-to-Edge */
+    .ad-slider-container { border-radius: 0; margin: 0; box-shadow: none; }
+    .ad-media-img, .ad-media-yt { border-radius: 0; box-shadow: none; }
     .ad-prev, .ad-next { padding: 8px; font-size: 14px; }
   }
 
@@ -242,7 +259,7 @@ const generateGlobalScripts = (postsData) => `
       
       const filtered = allPosts.filter(p => p.title.toLowerCase().includes(input));
       if (filtered.length > 0) {
-        // Render quick suggestions list
+        // Render quick suggestions list targeting the correct SITE_BASE
         resultsDiv.innerHTML = filtered.slice(0, 8).map(p => \`
           <a href="${SITE_BASE}/\${p.slug}" class="search-result-item">
             <span style="color:#cbd5e1; font-size:12px;">🔍</span> 
