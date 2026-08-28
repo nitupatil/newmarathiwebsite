@@ -2,10 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
+// 1. Initialize Supabase
 const SUPABASE_URL = 'https://ediqthdjnsrorcktldiu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaXF0aGRqbnNyb3Jja3RsZGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDMxMzQsImV4cCI6MjEwMzIxOTEzNH0.uYsfs-T7qR-2krUushlPI0tDqONTYU1AIzEIud-_BNM';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// 2. GitHub Pages Repository Configuration
 const SITE_BASE = '/newmarathiwebsite'; 
 const FULL_SITE_URL = 'https://nitupatil.github.io' + SITE_BASE;
 const AVATAR_URL = 'https://i.ibb.co/BVw78vKq/394000910-240835825678358-5228163708350764536-n-removebg-preview.png';
@@ -205,7 +207,7 @@ const generateGlobalScripts = (postsData) => `
       const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
       const days = ['रविवार', 'सोमवार', 'मंगळवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
       const months = ['जानेवारी', 'फेब्रुवारी', 'मार्च', 'एप्रिल', 'मे', 'जून', 'जुलै', 'ऑगस्ट', 'सप्टेंबर', 'ऑक्टोबर', 'नोव्हेंबर', 'डिसेंबर'];
-      const dayNum = String(now.getDate()).replace(/\\d/g, d => '०१२३४५६७८९'[d]);
+      const dayNum = String(now.getDate()).replace(/\\d/g, d => '०।'[d] || d);
       const year = String(now.getFullYear()).replace(/\\d/g, d => '०१२३४५६७८९'[d]);
       const mHours = String(now.getHours() % 12 || 12).replace(/\\d/g, d => '०१२३४५६७८९'[d]);
       const mMin = String(now.getMinutes()).padStart(2, '0').replace(/\\d/g, d => '०१२३४५६७८९'[d]);
@@ -302,7 +304,6 @@ const generateGlobalScripts = (postsData) => `
   </script>
 `;
 
-// FULLY SEO OPTIMIZED METADATA GENERATOR
 const generateSEO = (title, pathStr, post = null) => {
   let finalTitle = title;
   let desc = "ताज्या बातम्या आणि शासकीय योजनांची माहितीसाठी विठ्ठल स्पीक्स";
@@ -468,7 +469,7 @@ async function buildSite() {
         <div class="card-content">
           ${catBadge}
           <h3 class="card-title">${escapeAttr(p.title)}</h3>
-          <div style="margin-top:auto; font-size: 0.85rem; color:var(--text-muted); font-weight:600;"><span style="color:var(--text-muted);"></span> ${formatMarathiDate(p.published_at || p.created_at)}</div>
+          <div style="margin-top:auto; font-size: 0.85rem; color:var(--text-muted); font-weight:600;"><span style="color:var(--text-muted);"></span> ${formatMarathiDate(post.published_at || post.created_at)}</div>
         </div>
       </a>`;
     }).join('');
