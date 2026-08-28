@@ -207,7 +207,7 @@ const generateGlobalScripts = (postsData) => `
       const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
       const days = ['रविवार', 'सोमवार', 'मंगळवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
       const months = ['जानेवारी', 'फेब्रुवारी', 'मार्च', 'एप्रिल', 'मे', 'जून', 'जुलै', 'ऑगस्ट', 'सप्टेंबर', 'ऑक्टोबर', 'नोव्हेंबर', 'डिसेंबर'];
-      const dayNum = String(now.getDate()).replace(/\\d/g, d => '०।'[d] || d);
+      const dayNum = String(now.getDate()).replace(/\\d/g, d => '०१२३४५६७८९'[d]);
       const year = String(now.getFullYear()).replace(/\\d/g, d => '०१२३४५६७८९'[d]);
       const mHours = String(now.getHours() % 12 || 12).replace(/\\d/g, d => '०१२३४५६७८९'[d]);
       const mMin = String(now.getMinutes()).padStart(2, '0').replace(/\\d/g, d => '०१२३४५६७८९'[d]);
@@ -469,7 +469,7 @@ async function buildSite() {
         <div class="card-content">
           ${catBadge}
           <h3 class="card-title">${escapeAttr(p.title)}</h3>
-          <div style="margin-top:auto; font-size: 0.85rem; color:var(--text-muted); font-weight:600;"><span style="color:var(--text-muted);"></span> ${formatMarathiDate(post.published_at || post.created_at)}</div>
+          <div style="margin-top:auto; font-size: 0.85rem; color:var(--text-muted); font-weight:600;"><span style="color:var(--text-muted);"></span> ${formatMarathiDate(p.published_at || p.created_at)}</div>
         </div>
       </a>`;
     }).join('');
