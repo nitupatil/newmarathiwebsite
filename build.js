@@ -7,8 +7,8 @@ const SUPABASE_URL = 'https://ediqthdjnsrorcktldiu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaXF0aGRqbnNyb3Jja3RsZGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDMxMzQsImV4cCI6MjEwMzIxOTEzNH0.uYsfs-T7qR-2krUushlPI0tDqONTYU1AIzEIud-_BNM';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SITE_BASE = 'https://www.weebstudio.site'; 
-const FULL_SITE_URL = 'https://www.weebstudio.site' + SITE_BASE;
+const SITE_BASE = '/newmarathiwebsite'; 
+const FULL_SITE_URL = 'https://nitupatil.github.io' + SITE_BASE;
 const AVATAR_URL = 'https://i.ibb.co/BVw78vKq/394000910-240835825678358-5228163708350764536-n-removebg-preview.png';
 const FAVICON_URL = 'https://i.ibb.co/SwTxjYrw/394000910-240835825678358-5228163708350764536-n.jpg';
 
@@ -121,13 +121,15 @@ const globalCSS = `
   .toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 10px; position: fixed; z-index: 10001; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 600; font-size: 0.95rem; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
   .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
-  /* --- AD CAROUSEL (Fixed for visibility) --- */
+  /* --- AD CAROUSEL (Fixed YouTube width for Desktop) --- */
   .ad-slider-container { width: 100%; background: transparent; border-radius: 12px; margin: 25px 0; position: relative; overflow: hidden; text-align: center; touch-action: pan-y; }
   .ad-label { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: #fff; padding: 2px 8px; font-size: 0.7rem; border-radius: 4px; z-index: 10; font-weight: bold; }
   .ad-slide { display: none; width: 100%; animation: fade 0.5s; background: transparent; }
   .ad-slide.active { display: block; }
-  .ad-media-img { width: 100%; height: auto; max-height: 450px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-  .ad-media-yt { width: 100%; aspect-ratio: 16/9; border: none; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  
+  .ad-media-img { width: 100%; height: auto; max-height: 450px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); pointer-events: none; }
+  /* NEW MAX-WIDTH FOR DESKTOP YOUTUBE ADS */
+  .ad-media-yt { width: 100%; max-width: 800px; aspect-ratio: 16/9; border: none; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); pointer-events: auto; }
   
   .ad-dots { position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10; }
   .ad-dot { height: 10px; width: 10px; background-color: rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
@@ -161,7 +163,7 @@ const globalCSS = `
     .section-title { margin: 20px 16px; }
     
     .ad-slider-container { border-radius: 0; margin: 15px 0; }
-    .ad-media-img, .ad-media-yt { border-radius: 0; box-shadow: none; }
+    .ad-media-img, .ad-media-yt { border-radius: 0; box-shadow: none; max-width: 100%; }
     .ad-prev, .ad-next { padding: 8px; font-size: 14px; }
   }
 
@@ -213,7 +215,6 @@ const generateGlobalScripts = (postsData) => `
     }
     setInterval(updateLiveTime, 1000); window.addEventListener('DOMContentLoaded', updateLiveTime);
 
-    // FIXED stringify replacing < to avoid script breaking
     const allPosts = ${JSON.stringify(postsData).replace(/</g, '\\u003c')};
     
     function handleSearch() {
@@ -345,7 +346,6 @@ const generateAdCarousel = (ads, location, postId = null) => {
   if (!ads || ads.length === 0) return '';
   const activeAds = ads.filter(ad => {
     const rule = ad.display_rule || 'all';
-    // Assume ad is active if status is missing/null to preserve old ads
     if (ad.status && ad.status !== 'active') return false; 
     
     if (rule === 'all') return true;
@@ -366,7 +366,6 @@ const generateAdCarousel = (ads, location, postId = null) => {
       ? `<iframe class="ad-media-yt" src="${getYouTubeEmbedUrl(ad.media_url)}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
       : `<img src="${escapeAttr(ad.media_url)}" class="ad-media-img" onclick="trackAdClick(${ad.id}, '${escapeAttr(ad.destination_url) || ''}')">`;
     
-    // Force the first slide to be instantly visible in raw HTML to prevent blank screens
     let activeClass = i === 0 ? ' active' : '';
     return `<div class="ad-slide${activeClass}">${media}<script>window.addEventListener('DOMContentLoaded', () => trackAdView(${ad.id}));</script></div>`;
   }).join('');
@@ -383,9 +382,7 @@ const generateAdCarousel = (ads, location, postId = null) => {
 async function buildSite() {
   const rootPath = __dirname;
   
-  // Fetch posts strictly filtering for 'published'
   const { data: posts } = await supabase.from('blogs').select('*').eq('status', 'published').order('created_at', { ascending: false });
-  // Fetch ALL ads, then filter in javascript to allow backward compatibility for old null-status ads
   const { data: ads } = await supabase.from('ads').select('*').order('created_at', { ascending: false });
 
   const minimalSearchData = posts ? posts.map(p => ({ title: p.title, slug: p.slug })) : [];
