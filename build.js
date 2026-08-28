@@ -8,7 +8,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const SITE_BASE = 'https://www.weebstudio.site/'; 
-const FULL_SITE_URL = 'https://nitupatil.github.io' + SITE_BASE;
+const FULL_SITE_URL = 'https://www.weebstudio.site' + SITE_BASE;
 const AVATAR_URL = 'https://i.ibb.co/BVw78vKq/394000910-240835825678358-5228163708350764536-n-removebg-preview.png';
 const FAVICON_URL = 'https://i.ibb.co/SwTxjYrw/394000910-240835825678358-5228163708350764536-n.jpg';
 
