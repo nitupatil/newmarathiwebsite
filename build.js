@@ -7,7 +7,6 @@ const SUPABASE_URL = 'https://ediqthdjnsrorcktldiu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaXF0aGRqbnNyb3Jja3RsZGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDMxMzQsImV4cCI6MjEwMzIxOTEzNH0.uYsfs-T7qR-2krUushlPI0tDqONTYU1AIzEIud-_BNM';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// FIXED: Restored to point to your repository, fixing the 404s and Home Button
 const SITE_BASE = '/newmarathiwebsite'; 
 const FULL_SITE_URL = 'https://nitupatil.github.io' + SITE_BASE;
 const AVATAR_URL = 'https://i.ibb.co/BVw78vKq/394000910-240835825678358-5228163708350764536-n-removebg-preview.png';
@@ -57,7 +56,6 @@ const globalCSS = `
   
   #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-yellow); width: 0%; z-index: 10005; transition: width 0.1s; }
   
-  /* FIXED: Main header given relative positioning & high z-index to float search above nav-bar */
   .main-header { background: #fff; border-bottom: 1px solid #e2e8f0; width: 100%; position: relative; z-index: 10005; }
   .header-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 4%; max-width: 1600px; margin: 0 auto; width: 100%; }
   .custom-brand { display: flex; align-items: center; gap: 12px; }
@@ -70,11 +68,10 @@ const globalCSS = `
   .header-right { display: flex; align-items: center; gap: 20px; }
   .datetime-box { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; white-space: nowrap; }
   
-  /* Search Component */
   .search-wrapper { position: relative; width: 100%; max-width: 300px; }
   .search-input { width: 100%; padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 20px; outline: none; font-size: 16px !important; background: #f8fafc; transition: all 0.2s; }
   .search-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(0,31,63,0.1); }
-  .search-results { display: none; position: absolute; top: 45px; left: 0; right: 0; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; max-height: 350px; overflow-y: auto; border: 1px solid #e2e8f0; padding: 8px 0; }
+  .search-results { display: none; position: absolute; top: 45px; left: 0; right: 0; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; max-height: 350px; overflow-y: auto; border: 1px solid #e2e8f0; padding: 8px 0; z-index: 1001; }
   .search-result-item { padding: 10px 20px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; color: var(--text-main); border-bottom: 1px solid #f1f5f9; transition: background 0.2s; }
   .search-result-item:last-child { border-bottom: none; }
   .search-result-item:hover { background: #f8fafc; color: var(--accent-orange); }
@@ -124,13 +121,13 @@ const globalCSS = `
   .toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 10px; position: fixed; z-index: 10001; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 600; font-size: 0.95rem; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
   .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
-  /* --- AD CAROUSEL --- */
+  /* --- AD CAROUSEL (Fixed for visibility) --- */
   .ad-slider-container { width: 100%; background: transparent; border-radius: 12px; margin: 25px 0; position: relative; overflow: hidden; text-align: center; touch-action: pan-y; }
   .ad-label { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: #fff; padding: 2px 8px; font-size: 0.7rem; border-radius: 4px; z-index: 10; font-weight: bold; }
   .ad-slide { display: none; width: 100%; animation: fade 0.5s; background: transparent; }
   .ad-slide.active { display: block; }
-  .ad-media-img { width: 100%; height: auto; max-height: 450px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto; pointer-events: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-  .ad-media-yt { width: 100%; aspect-ratio: 16/9; border: none; display: block; margin: 0 auto; pointer-events: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  .ad-media-img { width: 100%; height: auto; max-height: 450px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  .ad-media-yt { width: 100%; aspect-ratio: 16/9; border: none; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
   
   .ad-dots { position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10; }
   .ad-dot { height: 10px; width: 10px; background-color: rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
@@ -141,53 +138,29 @@ const globalCSS = `
   .ad-next { right: 0; border-radius: 4px 0 0 4px; }
   .ad-prev:hover, .ad-next:hover { background-color: rgba(0,0,0,0.8); }
 
-  /* --- FIXED MOBILE VIEW: Edge-to-Edge, No Margins, No Box --- */
   @media (max-width: 768px) {
     body { background: #ffffff; }
-    
     .header-top { flex-direction: column; gap: 12px; padding: 15px 4%; align-items: flex-start; }
     .header-right { width: 100%; justify-content: center; }
     .search-wrapper { max-width: 100%; }
     .datetime-box { display: none; }
-    
     .horizontal-nav { justify-content: space-between; gap: 5px; padding: 0 4%; }
     .horizontal-nav a { font-size: 0.85rem; padding: 10px 0; }
     
-    /* Remove outer container margins */
     .container { padding: 0; margin: 0; width: 100%; max-width: 100%; }
     .article-layout { gap: 0; }
     
-    /* Flat edge-to-edge Article Body */
-    .article-card { 
-      padding: 20px 16px; 
-      border-radius: 0; 
-      box-shadow: none; 
-      border: none; 
-      border-bottom: 1px solid #e2e8f0; 
-    }
+    .article-card { padding: 20px 16px; border-radius: 0; box-shadow: none; border: none; border-bottom: 1px solid #e2e8f0; }
     .article-title { font-size: 1.8rem; margin-top: 10px; }
-    
-    /* Sidebar matching padding */
     .article-sidebar { padding: 20px 16px; }
-    
-    /* Flat Home Grid */
     .news-grid { padding: 0; margin: 0; grid-template-columns: 1fr; gap: 0; }
     
-    /* Flat Cards */
-    .post-card { 
-      border-radius: 0; 
-      border: none; 
-      border-bottom: 1px solid #e2e8f0; 
-      box-shadow: none; 
-      margin-bottom: 0;
-    }
+    .post-card { border-radius: 0; border: none; border-bottom: 1px solid #e2e8f0; box-shadow: none; margin-bottom: 0; }
     .post-card:hover { transform: none; box-shadow: none; }
     .card-img-wrap { height: 180px; border-radius: 0; }
-    
     .section-title { margin: 20px 16px; }
     
-    /* Ads Edge-to-Edge */
-    .ad-slider-container { border-radius: 0; margin: 0; box-shadow: none; }
+    .ad-slider-container { border-radius: 0; margin: 15px 0; }
     .ad-media-img, .ad-media-yt { border-radius: 0; box-shadow: none; }
     .ad-prev, .ad-next { padding: 8px; font-size: 14px; }
   }
@@ -240,14 +213,9 @@ const generateGlobalScripts = (postsData) => `
     }
     setInterval(updateLiveTime, 1000); window.addEventListener('DOMContentLoaded', updateLiveTime);
 
-    window.onscroll = function() {
-      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const bar = document.getElementById("progress-bar");
-      if(bar) bar.style.width = ((document.body.scrollTop || document.documentElement.scrollTop) / height) * 100 + "%";
-    };
-
-    // YouTube-style Instant Search Logic
-    const allPosts = ${JSON.stringify(postsData)};
+    // FIXED stringify replacing < to avoid script breaking
+    const allPosts = ${JSON.stringify(postsData).replace(/</g, '\\u003c')};
+    
     function handleSearch() {
       const input = document.getElementById('searchInput').value.toLowerCase().trim();
       const resultsDiv = document.getElementById('searchResults');
@@ -259,11 +227,9 @@ const generateGlobalScripts = (postsData) => `
       
       const filtered = allPosts.filter(p => p.title.toLowerCase().includes(input));
       if (filtered.length > 0) {
-        // Render quick suggestions list targeting the correct SITE_BASE
         resultsDiv.innerHTML = filtered.slice(0, 8).map(p => \`
           <a href="${SITE_BASE}/\${p.slug}" class="search-result-item">
-            <span style="color:#cbd5e1; font-size:12px;">🔍</span> 
-            \${p.title}
+            <span style="color:#cbd5e1; font-size:12px;">🔍</span> \${p.title}
           </a>
         \`).join('');
       } else {
@@ -272,7 +238,6 @@ const generateGlobalScripts = (postsData) => `
       resultsDiv.style.display = 'block';
     }
     
-    // Close search if clicked outside
     document.addEventListener('click', e => { 
       if (!e.target.closest('.search-wrapper')) {
         const res = document.getElementById('searchResults');
@@ -360,7 +325,6 @@ const generateHeader = () => `
       <div class="header-right">
         <div class="datetime-box" id="live-time">लोड होत आहे...</div>
         <div class="search-wrapper">
-          <!-- oninput ensures instant search as you type -->
           <input type="text" id="searchInput" class="search-input" placeholder="🔍 माहिती शोधा..." oninput="handleSearch()" onfocus="handleSearch()" autocomplete="off">
           <div id="searchResults" class="search-results"></div>
         </div>
@@ -381,7 +345,9 @@ const generateAdCarousel = (ads, location, postId = null) => {
   if (!ads || ads.length === 0) return '';
   const activeAds = ads.filter(ad => {
     const rule = ad.display_rule || 'all';
-    if (ad.status !== 'active') return false; 
+    // Assume ad is active if status is missing/null to preserve old ads
+    if (ad.status && ad.status !== 'active') return false; 
+    
     if (rule === 'all') return true;
     if (location === 'home') return rule === 'home_only' || rule === 'home_and_specific_posts';
     if (location === 'post') {
@@ -392,15 +358,17 @@ const generateAdCarousel = (ads, location, postId = null) => {
     return false;
   });
 
-  // If no ads match this specific page, output nothing. No empty boxes!
   if (activeAds.length === 0) return '';
   
   let slidesHtml = activeAds.map((ad, i) => {
-    const isYT = ad.media_type === 'youtube' || ad.media_url.includes('youtube.com') || ad.media_url.includes('youtu.be');
+    const isYT = ad.media_type === 'youtube' || (ad.media_url && (ad.media_url.includes('youtube.com') || ad.media_url.includes('youtu.be')));
     let media = isYT
       ? `<iframe class="ad-media-yt" src="${getYouTubeEmbedUrl(ad.media_url)}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
       : `<img src="${escapeAttr(ad.media_url)}" class="ad-media-img" onclick="trackAdClick(${ad.id}, '${escapeAttr(ad.destination_url) || ''}')">`;
-    return `<div class="ad-slide">${media}<script>window.addEventListener('DOMContentLoaded', () => trackAdView(${ad.id}));</script></div>`;
+    
+    // Force the first slide to be instantly visible in raw HTML to prevent blank screens
+    let activeClass = i === 0 ? ' active' : '';
+    return `<div class="ad-slide${activeClass}">${media}<script>window.addEventListener('DOMContentLoaded', () => trackAdView(${ad.id}));</script></div>`;
   }).join('');
   
   let arrowsHtml = activeAds.length > 1 ? `
@@ -414,8 +382,11 @@ const generateAdCarousel = (ads, location, postId = null) => {
 
 async function buildSite() {
   const rootPath = __dirname;
+  
+  // Fetch posts strictly filtering for 'published'
   const { data: posts } = await supabase.from('blogs').select('*').eq('status', 'published').order('created_at', { ascending: false });
-  const { data: ads } = await supabase.from('ads').select('*').eq('status', 'active').order('created_at', { ascending: false });
+  // Fetch ALL ads, then filter in javascript to allow backward compatibility for old null-status ads
+  const { data: ads } = await supabase.from('ads').select('*').order('created_at', { ascending: false });
 
   const minimalSearchData = posts ? posts.map(p => ({ title: p.title, slug: p.slug })) : [];
   const dynamicScripts = generateGlobalScripts(minimalSearchData);
@@ -438,7 +409,7 @@ async function buildSite() {
           <div class="article-main">
             <div class="article-card">
               <h1 class="article-title">${post.title}</h1>
-              <div class="article-meta"><span style="color:var(--text-muted);">प्रकाशित:</span> ${formatMarathiDate(post.published_at || post.created_at)}</div>
+              <div class="article-meta"><span style="color:var(--text-muted);">प्रकाशित:</span> &nbsp;${formatMarathiDate(post.published_at || post.created_at)}</div>
               <div class="article-content">${post.content}</div>
               
               <div class="share-section">
