@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
-// 1. Initialize Supabase
 const SUPABASE_URL = 'https://ediqthdjnsrorcktldiu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaXF0aGRqbnNyb3Jja3RsZGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDMxMzQsImV4cCI6MjEwMzIxOTEzNH0.uYsfs-T7qR-2krUushlPI0tDqONTYU1AIzEIud-_BNM';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -106,8 +105,10 @@ const globalCSS = `
   .post-card:hover .card-img-wrap img { transform: scale(1.05); }
   .card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; overflow-wrap: break-word; }
   .card-title { font-size: 1.1rem; font-weight: 700; margin: 0 0 8px; line-height: 1.4; color: var(--primary-dark); }
+  .card-category { font-size: 0.75rem; font-weight: 800; color: var(--accent-red); text-transform: uppercase; margin-bottom: 4px; }
 
   .article-card { background: var(--card-bg); border-radius: var(--radius); padding: 35px; box-shadow: var(--shadow); width: 100%; overflow-x: hidden; border: 1px solid #e2e8f0; }
+  .article-category { display: inline-block; background: #fee2e2; color: #dc2626; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; }
   .article-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); line-height: 1.3; margin: 0 0 15px; overflow-wrap: break-word; }
   .article-meta { font-size: 0.95rem; color: var(--text-muted); padding-bottom: 15px; border-bottom: 1px solid #e2e8f0; margin-bottom: 25px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
   .article-content { font-size: 1.15rem; line-height: 1.8; color: #333; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
@@ -121,14 +122,11 @@ const globalCSS = `
   .toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 10px; position: fixed; z-index: 10001; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 600; font-size: 0.95rem; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
   .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
-  /* --- AD CAROUSEL (Fixed YouTube width for Desktop) --- */
   .ad-slider-container { width: 100%; background: transparent; border-radius: 12px; margin: 25px 0; position: relative; overflow: hidden; text-align: center; touch-action: pan-y; }
   .ad-label { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: #fff; padding: 2px 8px; font-size: 0.7rem; border-radius: 4px; z-index: 10; font-weight: bold; }
   .ad-slide { display: none; width: 100%; animation: fade 0.5s; background: transparent; }
   .ad-slide.active { display: block; }
-  
   .ad-media-img { width: 100%; height: auto; max-height: 450px; object-fit: contain; cursor: pointer; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); pointer-events: none; }
-  /* NEW MAX-WIDTH FOR DESKTOP YOUTUBE ADS */
   .ad-media-yt { width: 100%; max-width: 800px; aspect-ratio: 16/9; border: none; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); pointer-events: auto; }
   
   .ad-dots { position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 10; }
@@ -254,7 +252,6 @@ const generateGlobalScripts = (postsData) => `
     function copyCurrentLink() { navigator.clipboard.writeText(window.location.href); showToast(); }
     function shareWhatsApp(title) { window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(title + " - येथे वाचा: ") + encodeURIComponent(window.location.href), '_blank'); }
 
-    // --- SMART AD CAROUSEL LOGIC ---
     let slideIndex = 1;
     let slideInterval;
     let touchStartX = 0;
@@ -305,11 +302,34 @@ const generateGlobalScripts = (postsData) => `
   </script>
 `;
 
-const generateSEO = (title, pathStr) => `
-  <title>${escapeAttr(title)}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <link rel="icon" type="image/jpeg" href="${FAVICON_URL}">
-`;
+// FULLY SEO OPTIMIZED METADATA GENERATOR
+const generateSEO = (title, pathStr, post = null) => {
+  let finalTitle = title;
+  let desc = "ताज्या बातम्या आणि शासकीय योजनांची माहितीसाठी विठ्ठल स्पीक्स";
+  let keywords = "Vitthal Speaks, Marathi News, योजना, महाराष्ट्र, नोकरी";
+  let ogImage = FAVICON_URL;
+
+  if (post) {
+    finalTitle = post.seo_title || post.title;
+    desc = post.seo_description || post.excerpt || desc;
+    keywords = post.seo_keywords || keywords;
+    ogImage = post.featured_image || extractImg(post.content) || FAVICON_URL;
+  }
+
+  return `
+    <title>${escapeAttr(finalTitle)}</title>
+    <meta name="description" content="${escapeAttr(desc)}">
+    <meta name="keywords" content="${escapeAttr(keywords)}">
+    <meta property="og:title" content="${escapeAttr(finalTitle)}">
+    <meta property="og:description" content="${escapeAttr(desc)}">
+    <meta property="og:image" content="${escapeAttr(ogImage)}">
+    <meta property="og:url" content="${FULL_SITE_URL}${pathStr}">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="icon" type="image/jpeg" href="${FAVICON_URL}">
+  `;
+};
 
 const generateHeader = () => `
   <div id="progress-bar"></div>
@@ -393,18 +413,24 @@ async function buildSite() {
     posts.forEach((post) => {
       const postAdsHtml = generateAdCarousel(ads, 'post', post.id);
       
-      let relatedHtml = posts.filter(p => p.id !== post.id).slice(0, 6).map(p => `
+      let relatedHtml = posts.filter(p => p.id !== post.id).slice(0, 6).map(p => {
+        const thumb = p.featured_image || extractImg(p.content);
+        return `
         <a href="${SITE_BASE}/${p.slug}" class="post-card" style="margin-bottom: 20px; border-radius: 8px;">
-          <div class="card-img-wrap" style="height: 100px;"><img src="${extractImg(p.content)}"></div>
+          <div class="card-img-wrap" style="height: 100px;"><img src="${thumb}"></div>
           <div class="card-content" style="padding: 12px;"><h4 style="font-size: 1rem; margin:0; color:var(--primary-dark);">${escapeAttr(p.title)}</h4></div>
-        </a>`).join('');
+        </a>`;
+      }).join('');
+
+      const categoryBadge = post.category ? `<span class="article-category">${escapeAttr(post.category)}</span>` : '';
 
       const postHtml = `<!DOCTYPE html><html lang="mr"><head><meta charset="UTF-8">
-        ${generateSEO(post.title, `/${post.slug}`)}<style>${globalCSS}</style>${dynamicScripts}</head>
+        ${generateSEO(post.title, `/${post.slug}`, post)}<style>${globalCSS}</style>${dynamicScripts}</head>
         <body>${headerNavHtml}
         <div class="container article-layout">
           <div class="article-main">
             <div class="article-card">
+              ${categoryBadge}
               <h1 class="article-title">${post.title}</h1>
               <div class="article-meta"><span style="color:var(--text-muted);">प्रकाशित:</span> &nbsp;${formatMarathiDate(post.published_at || post.created_at)}</div>
               <div class="article-content">${post.content}</div>
@@ -433,23 +459,28 @@ async function buildSite() {
     const tickerItems = posts.slice(0, 5).map(p => `<a href="${SITE_BASE}/${p.slug}" class="ticker-item">${escapeAttr(p.title)} •</a>`).join(' ');
     const tickerHtml = `<div class="ticker-wrap"><div class="ticker-label">ताज्या बातम्या :</div><div style="overflow: hidden; flex-grow: 1;"><div class="ticker-move">${tickerItems} ${tickerItems}</div></div></div>`;
 
-    let homeCards = posts.map(p => `
+    let homeCards = posts.map(p => {
+      const thumb = p.featured_image || extractImg(p.content);
+      const catBadge = p.category ? `<div class="card-category">${escapeAttr(p.category)}</div>` : '';
+      return `
       <a href="${SITE_BASE}/${p.slug}" class="post-card">
-        <div class="card-img-wrap"><img src="${extractImg(p.content)}" alt="${escapeAttr(p.title)}"></div>
+        <div class="card-img-wrap"><img src="${thumb}" alt="${escapeAttr(p.title)}"></div>
         <div class="card-content">
+          ${catBadge}
           <h3 class="card-title">${escapeAttr(p.title)}</h3>
           <div style="margin-top:auto; font-size: 0.85rem; color:var(--text-muted); font-weight:600;"><span style="color:var(--text-muted);"></span> ${formatMarathiDate(p.published_at || p.created_at)}</div>
         </div>
-      </a>`).join('');
+      </a>`;
+    }).join('');
 
     const indexHtml = `<!DOCTYPE html><html lang="mr"><head><meta charset="UTF-8">
-      ${generateSEO("Vitthal Speaks", "/")}<style>${globalCSS}</style>${dynamicScripts}</head>
+      ${generateSEO("Vitthal Speaks - शासकीय योजना आणि नोकरी माहिती", "/", null)}<style>${globalCSS}</style>${dynamicScripts}</head>
       <body>${headerNavHtml}${tickerHtml}<div class="container">${homeAdsHtml}<h2 class="section-title">📰 ताज्या पोस्ट</h2><div class="news-grid">${homeCards}</div></div></body></html>`;
     fs.writeFileSync(path.join(rootPath, 'index.html'), indexHtml);
   }
 
   const notFoundHtml = `<!DOCTYPE html><html lang="mr"><head><meta charset="UTF-8">
-    ${generateSEO("Page Not Found", "/404")}<style>${globalCSS}</style>${dynamicScripts}</head>
+    ${generateSEO("Page Not Found", "/404", null)}<style>${globalCSS}</style>${dynamicScripts}</head>
     <body>${headerNavHtml}
     <div class="container" style="text-align: center; max-width: 800px; padding: 60px 20px;">
       <h1 style="color: var(--accent-red); font-size: 5rem; margin: 0; line-height:1;">४०४</h1>
