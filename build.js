@@ -403,8 +403,21 @@ const generateAdCarousel = (ads, location, postId = null) => {
 async function buildSite() {
   const rootPath = __dirname;
   
-  const { data: posts } = await supabase.from('blogs').select('*').eq('status', 'published').order('created_at', { ascending: false });
+  const { data: fetchedPosts } = await supabase.from('blogs').select('*').eq('status', 'published').order('created_at', { ascending: false });
   const { data: ads } = await supabase.from('ads').select('*').order('created_at', { ascending: false });
+
+  // SMART SANITIZER: Retroactively clean spaces from database slugs to prevent %20 URLs
+  const posts = fetchedPosts ? fetchedPosts.map(p => {
+    let cleanSlug = (p.slug || p.title || 'post-' + p.id)
+      .trim()
+      .replace(/\s+/g, '-') 
+      .replace(/[^\w\u0900-\u097F-]+/g, '') 
+      .replace(/-+/g, '-') 
+      .replace(/^-|-$/g, '') 
+      .toLowerCase();
+    
+    return { ...p, slug: cleanSlug };
+  }) : [];
 
   const minimalSearchData = posts ? posts.map(p => ({ title: p.title, slug: p.slug })) : [];
   const dynamicScripts = generateGlobalScripts(minimalSearchData);
@@ -455,12 +468,16 @@ async function buildSite() {
     });
   }
 
-  if (posts && posts.length > 0) {
-    const homeAdsHtml = generateAdCarousel(ads, 'home');
-    const tickerItems = posts.slice(0, 5).map(p => `<a href="${SITE_BASE}/${p.slug}" class="ticker-item">${escapeAttr(p.title)} •</a>`).join(' ');
-    const tickerHtml = `<div class="ticker-wrap"><div class="ticker-label">ताज्या बातम्या :</div><div style="overflow: hidden; flex-grow: 1;"><div class="ticker-move">${tickerItems} ${tickerItems}</div></div></div>`;
+  // Ensure Homepage Always Renders Even with 0 Posts
+  let homeAdsHtml = generateAdCarousel(ads, 'home');
+  let tickerHtml = '';
+  let homeCards = '<div style="padding: 40px; text-align: center; color: var(--text-muted); grid-column: 1 / -1;">नवीन अपडेट्स लवकरच येत आहेत...</div>';
 
-    let homeCards = posts.map(p => {
+  if (posts && posts.length > 0) {
+    const tickerItems = posts.slice(0, 5).map(p => `<a href="${SITE_BASE}/${p.slug}" class="ticker-item">${escapeAttr(p.title)} •</a>`).join(' ');
+    tickerHtml = `<div class="ticker-wrap"><div class="ticker-label">ताज्या बातम्या :</div><div style="overflow: hidden; flex-grow: 1;"><div class="ticker-move">${tickerItems} ${tickerItems}</div></div></div>`;
+
+    homeCards = posts.map(p => {
       const thumb = p.featured_image || extractImg(p.content);
       const catBadge = p.category ? `<div class="card-category">${escapeAttr(p.category)}</div>` : '';
       return `
@@ -473,12 +490,12 @@ async function buildSite() {
         </div>
       </a>`;
     }).join('');
-
-    const indexHtml = `<!DOCTYPE html><html lang="mr"><head><meta charset="UTF-8">
-      ${generateSEO("Vitthal Speaks - शासकीय योजना आणि नोकरी माहिती", "/", null)}<style>${globalCSS}</style>${dynamicScripts}</head>
-      <body>${headerNavHtml}${tickerHtml}<div class="container">${homeAdsHtml}<h2 class="section-title">📰 ताज्या पोस्ट</h2><div class="news-grid">${homeCards}</div></div></body></html>`;
-    fs.writeFileSync(path.join(rootPath, 'index.html'), indexHtml);
   }
+
+  const indexHtml = `<!DOCTYPE html><html lang="mr"><head><meta charset="UTF-8">
+    ${generateSEO("Vitthal Speaks - शासकीय योजना आणि नोकरी माहिती", "/", null)}<style>${globalCSS}</style>${dynamicScripts}</head>
+    <body>${headerNavHtml}${tickerHtml}<div class="container">${homeAdsHtml}<h2 class="section-title">📰 ताज्या पोस्ट</h2><div class="news-grid">${homeCards}</div></div></body></html>`;
+  fs.writeFileSync(path.join(rootPath, 'index.html'), indexHtml);
 
   const notFoundHtml = `<!DOCTYPE html><html lang="mr"><head><meta charset="UTF-8">
     ${generateSEO("Page Not Found", "/404", null)}<style>${globalCSS}</style>${dynamicScripts}</head>
