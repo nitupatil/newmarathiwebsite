@@ -7,7 +7,6 @@ const SUPABASE_URL = 'https://ediqthdjnsrorcktldiu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaXF0aGRqbnNyb3Jja3RsZGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDMxMzQsImV4cCI6MjEwMzIxOTEzNH0.uYsfs-T7qR-2krUushlPI0tDqONTYU1AIzEIud-_BNM';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// 2. GitHub Pages Repository Configuration
 const SITE_BASE = '/newmarathiwebsite'; 
 const FULL_SITE_URL = 'https://nitupatil.github.io' + SITE_BASE;
 const AVATAR_URL = 'https://i.ibb.co/BVw78vKq/394000910-240835825678358-5228163708350764536-n-removebg-preview.png';
@@ -226,7 +225,12 @@ const generateGlobalScripts = (postsData) => `
         return; 
       }
       
-      const filtered = allPosts.filter(p => p.title.toLowerCase().includes(input));
+      // SEARCH FIX: Now searches BOTH Marathi Title and English Title!
+      const filtered = allPosts.filter(p => 
+        (p.title && p.title.toLowerCase().includes(input)) ||
+        (p.title_en && p.title_en.toLowerCase().includes(input))
+      );
+
       if (filtered.length > 0) {
         resultsDiv.innerHTML = filtered.slice(0, 8).map(p => \`
           <a href="${SITE_BASE}/\${p.slug}" class="search-result-item">
@@ -406,20 +410,23 @@ async function buildSite() {
   const { data: fetchedPosts } = await supabase.from('blogs').select('*').eq('status', 'published').order('created_at', { ascending: false });
   const { data: ads } = await supabase.from('ads').select('*').order('created_at', { ascending: false });
 
-  // SMART SANITIZER: Retroactively clean spaces from database slugs to prevent %20 URLs
+  // STRICT SLUG CLEANER: Forcibly removes all %20s, Marathi characters, and spaces from slugs.
   const posts = fetchedPosts ? fetchedPosts.map(p => {
     let cleanSlug = (p.slug || p.title || 'post-' + p.id)
       .trim()
       .replace(/\s+/g, '-') 
-      .replace(/[^\w\u0900-\u097F-]+/g, '') 
+      .replace(/[^a-zA-Z0-9-]/g, '') // RESTRICTS TO ONLY ENGLISH LETTERS AND NUMBERS!
       .replace(/-+/g, '-') 
       .replace(/^-|-$/g, '') 
       .toLowerCase();
+      
+    if(!cleanSlug) cleanSlug = 'post-' + p.id;
     
     return { ...p, slug: cleanSlug };
   }) : [];
 
-  const minimalSearchData = posts ? posts.map(p => ({ title: p.title, slug: p.slug })) : [];
+  // Pushing both title and title_en to the front-end for searching
+  const minimalSearchData = posts ? posts.map(p => ({ title: p.title, title_en: p.title_en || '', slug: p.slug })) : [];
   const dynamicScripts = generateGlobalScripts(minimalSearchData);
   const headerNavHtml = generateHeader();
 
