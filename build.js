@@ -225,7 +225,6 @@ const generateGlobalScripts = (postsData) => `
         return; 
       }
       
-      // SEARCH FIX: Now searches BOTH Marathi Title and English Title!
       const filtered = allPosts.filter(p => 
         (p.title && p.title.toLowerCase().includes(input)) ||
         (p.title_en && p.title_en.toLowerCase().includes(input))
@@ -314,6 +313,7 @@ const generateSEO = (title, pathStr, post = null) => {
   let keywords = "Vitthal Speaks, Marathi News, योजना, महाराष्ट्र, नोकरी";
   let ogImage = FAVICON_URL;
 
+  // PRIORITY: Use SEO fields if they exist, otherwise fallback safely
   if (post) {
     finalTitle = post.seo_title || post.title;
     desc = post.seo_description || post.excerpt || desc;
@@ -410,22 +410,19 @@ async function buildSite() {
   const { data: fetchedPosts } = await supabase.from('blogs').select('*').eq('status', 'published').order('created_at', { ascending: false });
   const { data: ads } = await supabase.from('ads').select('*').order('created_at', { ascending: false });
 
-  // STRICT SLUG CLEANER: Forcibly removes all %20s, Marathi characters, and spaces from slugs.
   const posts = fetchedPosts ? fetchedPosts.map(p => {
     let cleanSlug = (p.slug || p.title || 'post-' + p.id)
       .trim()
       .replace(/\s+/g, '-') 
-      .replace(/[^a-zA-Z0-9-]/g, '') // RESTRICTS TO ONLY ENGLISH LETTERS AND NUMBERS!
+      .replace(/[^a-zA-Z0-9-]/g, '') 
       .replace(/-+/g, '-') 
       .replace(/^-|-$/g, '') 
       .toLowerCase();
       
     if(!cleanSlug) cleanSlug = 'post-' + p.id;
-    
     return { ...p, slug: cleanSlug };
   }) : [];
 
-  // Pushing both title and title_en to the front-end for searching
   const minimalSearchData = posts ? posts.map(p => ({ title: p.title, title_en: p.title_en || '', slug: p.slug })) : [];
   const dynamicScripts = generateGlobalScripts(minimalSearchData);
   const headerNavHtml = generateHeader();
@@ -475,7 +472,6 @@ async function buildSite() {
     });
   }
 
-  // Ensure Homepage Always Renders Even with 0 Posts
   let homeAdsHtml = generateAdCarousel(ads, 'home');
   let tickerHtml = '';
   let homeCards = '<div style="padding: 40px; text-align: center; color: var(--text-muted); grid-column: 1 / -1;">नवीन अपडेट्स लवकरच येत आहेत...</div>';
