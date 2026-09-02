@@ -49,7 +49,7 @@ const globalCSS = `
   
   :root { --primary: #001f3f; --primary-dark: #000000; --accent-yellow: #ffc107; --accent-orange: #ff9800; --accent-red: #d32f2f; --bg-light: #f4f6f8; --card-bg: #ffffff; --text-main: #1e293b; --text-muted: #475569; --radius: 12px; --shadow: 0 4px 12px rgba(0,0,0,0.05); }
   *, *::before, *::after { box-sizing: border-box; }
-  html, body { width: 100%; max-width: 100vw; margin: 0; padding: 0; overflow-x: clip; overscroll-behavior-x: none; touch-action: pan-y; -webkit-text-size-adjust: 100%; }
+  html, body { width: 100%; max-width: 100vw; margin: 0; padding: 0; overflow-x: hidden; overscroll-behavior-x: none; touch-action: pan-y; -webkit-text-size-adjust: 100%; }
   body { font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif; background: var(--bg-light); color: var(--text-main); line-height: 1.7; }
   img, iframe, video { max-width: 100%; height: auto; display: block; border: none; }
   a { text-decoration: none; color: inherit; }
@@ -140,19 +140,22 @@ const globalCSS = `
   .ad-prev:hover, .ad-next:hover { background-color: rgba(0,0,0,0.8); }
 
   /* Standard Forms and Standard Page Layout */
-  .page-card { max-width: 1000px; background: white; padding: 40px; border-radius: 12px; margin: 40px auto; box-shadow: var(--shadow); border: 1px solid #e2e8f0; }
+  .page-card { background: white; padding: 40px; border-radius: 12px; margin: 40px auto; box-shadow: var(--shadow); border: 1px solid #e2e8f0; width: 100%; }
+  .contact-card { max-width: 900px; }
+  .privacy-card { max-width: 1000px; }
   .page-card h1 { color: var(--primary-dark); margin-bottom: 20px; }
   .page-card p, .page-card li { font-size: 1.05rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 15px; }
+  
   .form-group { margin-bottom: 20px; }
   .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--primary-dark); }
-  .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 1rem; }
+  .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 1rem; box-sizing: border-box; }
   .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255,152,0,0.1); }
   .btn-submit { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; }
   .btn-submit:hover { background: var(--primary-dark); }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
 
   @media (max-width: 768px) {
-    body { background: #ffffff; }
+    body { background: #ffffff; overflow-x: hidden; }
     .header-top { flex-direction: column; gap: 12px; padding: 15px 4%; align-items: flex-start; }
     .header-right { width: 100%; justify-content: center; }
     .search-wrapper { max-width: 100%; }
@@ -160,22 +163,24 @@ const globalCSS = `
     .horizontal-nav { justify-content: space-between; gap: 5px; padding: 0 4%; }
     .horizontal-nav a { font-size: 0.85rem; padding: 10px 0; }
     
-    .container { padding: 0; margin: 0; width: 100%; max-width: 100%; }
+    .container { padding: 0; margin: 0; width: 100%; max-width: 100vw; overflow-x: hidden; }
     .article-layout { gap: 0; }
-    .page-card { margin: 20px 16px; padding: 25px 16px; border: none; box-shadow: none; border-bottom: 1px solid #e2e8f0; border-radius: 0; }
-    .grid-2 { grid-template-columns: 1fr; }
     
-    .article-card { padding: 20px 16px; border-radius: 0; box-shadow: none; border: none; border-bottom: 1px solid #e2e8f0; }
+    /* MOBILE ALIGNMENT FIX FOR PAGES */
+    .page-card { margin: 0; padding: 25px 16px; border: none; box-shadow: none; border-bottom: 1px solid #e2e8f0; border-radius: 0; width: 100%; max-width: 100vw; box-sizing: border-box; }
+    .grid-2 { grid-template-columns: 1fr; gap: 20px; }
+    
+    .article-card { padding: 20px 16px; border-radius: 0; box-shadow: none; border: none; border-bottom: 1px solid #e2e8f0; width: 100%; max-width: 100vw; box-sizing: border-box; }
     .article-title { font-size: 1.8rem; margin-top: 10px; }
-    .article-sidebar { padding: 20px 16px; }
-    .news-grid { padding: 0; margin: 0; grid-template-columns: 1fr; gap: 0; }
+    .article-sidebar { padding: 20px 16px; width: 100%; box-sizing: border-box; }
+    .news-grid { padding: 0; margin: 0; grid-template-columns: 1fr; gap: 0; width: 100%; }
     
     .post-card { border-radius: 0; border: none; border-bottom: 1px solid #e2e8f0; box-shadow: none; margin-bottom: 0; }
     .post-card:hover { transform: none; box-shadow: none; }
     .card-img-wrap { height: 180px; border-radius: 0; }
     .section-title { margin: 20px 16px; }
     
-    .ad-slider-container { border-radius: 0; margin: 15px 0; }
+    .ad-slider-container { border-radius: 0; margin: 15px 0; width: 100%; max-width: 100vw; }
     .ad-media-img, .ad-media-yt { border-radius: 0; box-shadow: none; max-width: 100%; }
     .ad-prev, .ad-next { padding: 8px; font-size: 14px; }
   }
@@ -547,21 +552,21 @@ async function buildSite() {
 
   // 3. GENERATE UPGRADED BILINGUAL CONTACT PAGE (contact.html)
   const contactContent = `
-    <div class="page-card" style="max-width: 900px; padding: 30px 20px;">
+    <div class="page-card contact-card">
       <div style="text-align: center; margin-bottom: 30px;">
         <h1 style="margin-bottom: 5px;">Contact Us | आमच्याशी संपर्क साधा</h1>
         <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">If you have any questions regarding government schemes, feel free to reach out. <br> शासकीय योजनांबद्दल तुमचे काही प्रश्न असल्यास, कृपया खालील फॉर्म भरा किंवा ईमेल करा.</p>
       </div>
       
-      <div class="grid-2" style="gap: 30px; align-items: start;">
-        <div class="contact-info" style="background: #f8fafc; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+      <div class="grid-2">
+        <div class="contact-info" style="background: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%; box-sizing: border-box;">
           <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 1.3rem;">Direct Contact <br><span style="font-size: 1rem; color: var(--accent-orange);">थेट संपर्क</span></h3>
           
           <div style="margin-top: 25px; display: flex; align-items: center; gap: 15px;">
             <div style="width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; flex-shrink: 0;">✉️</div>
             <div>
               <strong style="display: block; color: var(--text-main); font-size: 1.05rem;">Email / ईमेल:</strong>
-              <a href="mailto:vitthalaherblogs@gmail.com" style="color: var(--accent-orange); font-weight: 600; font-size: 1.05rem; word-break: break-all;">vitthalaherblogs@gmail.com</a>
+              <a href="mailto:vitthalaherblogs@gmail.com" style="color: var(--accent-orange); font-weight: 600; font-size: 1rem; word-break: break-all;">vitthalaherblogs@gmail.com</a>
             </div>
           </div>
           
@@ -569,12 +574,12 @@ async function buildSite() {
             <div style="width: 50px; height: 50px; background: #25D366; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; flex-shrink: 0;">🌐</div>
             <div>
               <strong style="display: block; color: var(--text-main); font-size: 1.05rem;">Website / वेबसाईट:</strong>
-              <a href="https://www.vitthalspeaks.com" style="color: var(--accent-orange); font-weight: 600; font-size: 1.05rem;">www.vitthalspeaks.com</a>
+              <a href="https://www.vitthalspeaks.com" style="color: var(--accent-orange); font-weight: 600; font-size: 1rem; word-break: break-all;">www.vitthalspeaks.com</a>
             </div>
           </div>
         </div>
         
-        <div style="background: white; padding: 10px;">
+        <div style="background: white; box-sizing: border-box;">
           <form id="contactForm" onsubmit="submitContactForm(event)">
             <div class="form-group">
               <label>Your Name / तुमचे नाव <span style="color:red">*</span></label>
@@ -602,7 +607,7 @@ async function buildSite() {
 
   // 4. GENERATE CLEAN BILINGUAL PRIVACY POLICY PAGE (privacy-policy.html)
   const privacyContent = `
-    <div class="page-card" style="max-width: 1000px; padding: 30px 20px;">
+    <div class="page-card privacy-card">
       <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 20px;">
         <h1 style="font-size: 2.5rem; margin-bottom: 5px; color: var(--primary-dark);">Privacy Policy</h1>
         <h2 style="font-size: 1.8rem; color: var(--accent-orange); margin-top: 0;">गोपनीयता धोरण</h2>
