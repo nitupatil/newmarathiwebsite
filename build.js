@@ -140,7 +140,7 @@ const globalCSS = `
   .ad-prev:hover, .ad-next:hover { background-color: rgba(0,0,0,0.8); }
 
   /* Standard Forms and Standard Page Layout */
-  .page-card { max-width: 800px; background: white; padding: 40px; border-radius: 12px; margin: 40px auto; box-shadow: var(--shadow); }
+  .page-card { max-width: 1000px; background: white; padding: 40px; border-radius: 12px; margin: 40px auto; box-shadow: var(--shadow); border: 1px solid #e2e8f0; }
   .page-card h1 { color: var(--primary-dark); margin-bottom: 20px; }
   .page-card p, .page-card li { font-size: 1.05rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 15px; }
   .form-group { margin-bottom: 20px; }
@@ -149,6 +149,7 @@ const globalCSS = `
   .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255,152,0,0.1); }
   .btn-submit { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; }
   .btn-submit:hover { background: var(--primary-dark); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
   @media (max-width: 768px) {
     body { background: #ffffff; }
@@ -161,7 +162,8 @@ const globalCSS = `
     
     .container { padding: 0; margin: 0; width: 100%; max-width: 100%; }
     .article-layout { gap: 0; }
-    .page-card { margin: 20px 16px; padding: 25px 16px; }
+    .page-card { margin: 20px 16px; padding: 25px 16px; border: none; box-shadow: none; border-bottom: 1px solid #e2e8f0; border-radius: 0; }
+    .grid-2 { grid-template-columns: 1fr; }
     
     .article-card { padding: 20px 16px; border-radius: 0; box-shadow: none; border: none; border-bottom: 1px solid #e2e8f0; }
     .article-title { font-size: 1.8rem; margin-top: 10px; }
@@ -328,22 +330,22 @@ const generateGlobalScripts = (postsData) => `
       const message = document.getElementById('c-message').value;
 
       btn.disabled = true;
-      btn.innerText = 'Sending Message...';
+      btn.innerText = 'Sending Message... / संदेश पाठवत आहे...';
       
       try {
         const { error } = await db.from('contact_messages').insert([{ name, email, message }]);
         if (error) throw error;
         
         status.style.color = 'green';
-        status.innerText = 'Message sent successfully! We will get back to you soon.';
+        status.innerText = '✅ Message sent successfully! We will get back to you soon. / संदेश यशस्वीरीत्या पाठवला!';
         document.getElementById('contactForm').reset();
       } catch (err) {
         console.error(err);
         status.style.color = 'red';
-        status.innerText = 'Error sending message. Please try again later.';
+        status.innerText = '❌ Error sending message. Please try again later. / संदेश पाठवताना त्रुटी आली.';
       } finally {
         btn.disabled = false;
-        btn.innerText = 'Send Message';
+        btn.innerText = 'Send Message / संदेश पाठवा';
       }
     }
   </script>
@@ -543,28 +545,54 @@ async function buildSite() {
     <body>${headerNavHtml}${tickerHtml}<div class="container">${homeAdsHtml}<h2 class="section-title">📰 ताज्या पोस्ट</h2><div class="news-grid">${homeCards}</div></div></body></html>`;
   fs.writeFileSync(path.join(rootPath, 'index.html'), indexHtml);
 
-  // 3. GENERATE CONTACT PAGE (contact.html)
+  // 3. GENERATE UPGRADED BILINGUAL CONTACT PAGE (contact.html)
   const contactContent = `
-    <div class="page-card">
-      <h1 style="text-align: center;">Contact Us</h1>
-      <p style="text-align: center;">If you have any questions, suggestions, or queries regarding government schemes, please feel free to reach out to us at <strong>vitthalaherblogs@gmail.com</strong>, or fill out the form below.</p>
+    <div class="page-card" style="max-width: 900px;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="margin-bottom: 5px;">Contact Us | आमच्याशी संपर्क साधा</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">If you have any questions regarding government schemes, feel free to reach out. <br> शासकीय योजनांबद्दल तुमचे काही प्रश्न असल्यास, कृपया खालील फॉर्म भरा किंवा ईमेल करा.</p>
+      </div>
       
-      <form id="contactForm" onsubmit="submitContactForm(event)" style="margin-top: 30px;">
-        <div class="form-group">
-          <label>Your Name</label>
-          <input type="text" id="c-name" required placeholder="Enter your full name">
+      <div class="grid-2" style="gap: 30px; align-items: start;">
+        <div class="contact-info" style="background: #f8fafc; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+          <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 1.3rem;">Direct Contact <br><span style="font-size: 1rem; color: var(--accent-orange);">थेट संपर्क</span></h3>
+          
+          <div style="margin-top: 25px; display: flex; align-items: center; gap: 15px;">
+            <div style="width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; flex-shrink: 0;">✉️</div>
+            <div>
+              <strong style="display: block; color: var(--text-main); font-size: 1.05rem;">Email / ईमेल:</strong>
+              <a href="mailto:vitthalaherblogs@gmail.com" style="color: var(--accent-orange); font-weight: 600; font-size: 1.05rem; word-break: break-all;">vitthalaherblogs@gmail.com</a>
+            </div>
+          </div>
+          
+          <div style="margin-top: 25px; display: flex; align-items: center; gap: 15px;">
+            <div style="width: 50px; height: 50px; background: #25D366; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; flex-shrink: 0;">🌐</div>
+            <div>
+              <strong style="display: block; color: var(--text-main); font-size: 1.05rem;">Website / वेबसाईट:</strong>
+              <a href="https://www.vitthalspeaks.com" style="color: var(--accent-orange); font-weight: 600; font-size: 1.05rem;">www.vitthalspeaks.com</a>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Your Email</label>
-          <input type="email" id="c-email" required placeholder="Enter your email address">
+        
+        <div style="background: white; padding: 10px;">
+          <form id="contactForm" onsubmit="submitContactForm(event)">
+            <div class="form-group">
+              <label>Your Name / तुमचे नाव <span style="color:red">*</span></label>
+              <input type="text" id="c-name" required placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+              <label>Your Email / तुमचा ईमेल <span style="color:red">*</span></label>
+              <input type="email" id="c-email" required placeholder="Enter your email address">
+            </div>
+            <div class="form-group">
+              <label>Message / तुमचा संदेश <span style="color:red">*</span></label>
+              <textarea id="c-message" required rows="5" placeholder="Write your message here..."></textarea>
+            </div>
+            <button type="submit" id="c-submit" class="btn-submit">Send Message / संदेश पाठवा</button>
+            <div id="c-status" style="text-align: center; margin-top: 15px; font-weight: 600;"></div>
+          </form>
         </div>
-        <div class="form-group">
-          <label>Message</label>
-          <textarea id="c-message" required rows="5" placeholder="Write your message here..."></textarea>
-        </div>
-        <button type="submit" id="c-submit" class="btn-submit">Send Message</button>
-        <div id="c-status" style="text-align: center; margin-top: 15px; font-weight: 600;"></div>
-      </form>
+      </div>
     </div>
   `;
   const contactHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
@@ -572,27 +600,51 @@ async function buildSite() {
     <body>${headerNavHtml}<div class="container">${contactContent}</div></body></html>`;
   fs.writeFileSync(path.join(rootPath, 'contact.html'), contactHtml);
 
-  // 4. GENERATE PRIVACY POLICY PAGE (privacy-policy.html)
+  // 4. GENERATE UPGRADED BILINGUAL PRIVACY POLICY PAGE (privacy-policy.html)
   const privacyContent = `
-    <div class="page-card">
-      <h1>Privacy Policy</h1>
-      <p>Last updated: ${new Date().toLocaleDateString()}</p>
-      <p>At Vitthal Speaks (accessible from https://www.vitthalspeaks.com/), one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Vitthal Speaks and how we use it.</p>
-      
-      <h3>Google DoubleClick DART Cookie</h3>
-      <p>Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to www.website.com and other sites on the internet. However, visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at the following URL – <a href="https://policies.google.com/technologies/ads" target="_blank">https://policies.google.com/technologies/ads</a>.</p>
-      
-      <h3>Our Advertising Partners</h3>
-      <p>Some of advertisers on our site may use cookies and web beacons. Our advertising partners include Google AdSense. Each of our advertising partners has their own Privacy Policy for their policies on user data.</p>
-      
-      <h3>Log Files</h3>
-      <p>Vitthal Speaks follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this and a part of hosting services' analytics. The information collected by log files include internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable.</p>
-      
-      <h3>Consent</h3>
-      <p>By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p>
-      
-      <h3>Contact Us</h3>
-      <p>If you have any additional questions or require more information about our Privacy Policy, do not hesitate to contact us through email at <strong>vitthalaherblogs@gmail.com</strong>.</p>
+    <div class="page-card" style="max-width: 1000px;">
+      <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 20px;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 5px; color: var(--primary-dark);">Privacy Policy</h1>
+        <h2 style="font-size: 1.8rem; color: var(--accent-orange); margin-top: 0;">गोपनीयता धोरण</h2>
+        <p style="font-weight: 600; color: var(--text-muted);">Last updated / अंतिम अद्यतन: ${new Date().toLocaleDateString()}</p>
+      </div>
+
+      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--primary);">
+        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">1. Introduction / प्रस्तावना</h3>
+        <p style="margin-bottom: 10px;">At Vitthal Speaks, accessible from https://www.vitthalspeaks.com/, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by us and how we use it.</p>
+        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">विठ्ठल स्पीक्स (https://www.vitthalspeaks.com/) वर, आमच्या अभ्यागतांची गोपनीयता ही आमची मुख्य प्राथमिकता आहे. या गोपनीयता धोरणाच्या दस्तऐवजात आम्ही कोणती माहिती गोळा करतो आणि ती कशी वापरतो याचे तपशील आहेत.</p>
+      </div>
+
+      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--accent-orange);">
+        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">2. Google DoubleClick DART Cookie / गुगल डार्ट कुकीज</h3>
+        <p style="margin-bottom: 10px;">Google is one of a third-party vendor on our site. It uses DART cookies to serve ads to our site visitors based upon their visit to our site and other sites on the internet. Visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at: <a href="https://policies.google.com/technologies/ads" target="_blank" style="color:var(--primary); font-weight:bold;">Google Privacy Policy</a>.</p>
+        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">गुगल हे आमच्या साइटवरील तृतीय-पक्ष विक्रेत्यांपैकी एक आहे. इंटरनेटवरील इतर साइट्स आणि आमच्या साइटच्या भेटीवर आधारित अभ्यागतांना जाहिराती दाखवण्यासाठी गुगल DART कुकीज वापरते. अभ्यागत गुगल जाहिरात नेटवर्क गोपनीयता धोरणाला भेट देऊन DART कुकीजचा वापर नाकारू शकतात.</p>
+      </div>
+
+      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--primary);">
+        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">3. Our Advertising Partners / आमचे जाहिरातदार</h3>
+        <p style="margin-bottom: 10px;">Some of advertisers on our site may use cookies and web beacons. Our advertising partners include Google AdSense. Each of our advertising partners has their own Privacy Policy for their policies on user data.</p>
+        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">आमच्या साइटवरील काही जाहिरातदार कुकीज वापरू शकतात. आमच्या जाहिरात भागीदारांमध्ये Google AdSense समाविष्ट आहे. वापरकर्त्यांच्या डेटावरील धोरणांसाठी त्यांच्याकडे स्वतःचे गोपनीयता धोरण आहे.</p>
+      </div>
+
+      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--accent-orange);">
+        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">4. Log Files / लॉग फाइल्स</h3>
+        <p style="margin-bottom: 10px;">Vitthal Speaks follows a standard procedure of using log files. The information collected by log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable.</p>
+        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">विठ्ठल स्पीक्स लॉग फाइल्स वापरण्याच्या मानक प्रक्रियेचे पालन करते. या फाइल्स अभ्यागत जेव्हा वेबसाइटला भेट देतात तेव्हा त्यांची नोंद घेतात. यामध्ये आयपी (IP) ॲड्रेस, ब्राउझर प्रकार, तारीख आणि वेळेची नोंद असते. ही कोणतीही वैयक्तिकरीत्या ओळखता येण्याजोगी माहिती नसते.</p>
+      </div>
+
+      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--primary);">
+        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">5. Consent / संमती</h3>
+        <p style="margin-bottom: 10px;">By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p>
+        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">आमची वेबसाइट वापरून, तुम्ही याद्वारे आमच्या गोपनीयता धोरणास संमती देता आणि त्यातील अटी व शर्तींना सहमती दर्शवता.</p>
+      </div>
+
+      <div style="margin-bottom: 10px; background: #fff8e1; padding: 30px; border-radius: 12px; border: 2px solid #ffe082; text-align: center;">
+        <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 1.4rem;">6. Contact Us / संपर्क साधा</h3>
+        <p style="margin-bottom: 10px;">If you have any questions or require more information about our Privacy Policy, do not hesitate to contact us through email.</p>
+        <p style="color: var(--text-main); font-weight: 600; margin-bottom: 20px;">तुम्हाला आमच्या गोपनीयता धोरणाबद्दल काही प्रश्न असल्यास किंवा अधिक माहितीची आवश्यकता असल्यास, कृपया आमच्याशी संपर्क साधा.</p>
+        <a href="mailto:vitthalaherblogs@gmail.com" class="btn-submit" style="display:inline-block; width:auto; text-decoration:none; font-size: 1.1rem; padding: 12px 30px;">✉️ Email: vitthalaherblogs@gmail.com</a>
+      </div>
     </div>
   `;
   const privacyHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
