@@ -547,7 +547,7 @@ async function buildSite() {
 
   // 3. GENERATE UPGRADED BILINGUAL CONTACT PAGE (contact.html)
   const contactContent = `
-    <div class="page-card" style="max-width: 900px;">
+    <div class="page-card" style="max-width: 900px; padding: 30px 20px;">
       <div style="text-align: center; margin-bottom: 30px;">
         <h1 style="margin-bottom: 5px;">Contact Us | आमच्याशी संपर्क साधा</h1>
         <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">If you have any questions regarding government schemes, feel free to reach out. <br> शासकीय योजनांबद्दल तुमचे काही प्रश्न असल्यास, कृपया खालील फॉर्म भरा किंवा ईमेल करा.</p>
@@ -600,46 +600,46 @@ async function buildSite() {
     <body>${headerNavHtml}<div class="container">${contactContent}</div></body></html>`;
   fs.writeFileSync(path.join(rootPath, 'contact.html'), contactHtml);
 
-  // 4. GENERATE UPGRADED BILINGUAL PRIVACY POLICY PAGE (privacy-policy.html)
+  // 4. GENERATE CLEAN BILINGUAL PRIVACY POLICY PAGE (privacy-policy.html)
   const privacyContent = `
-    <div class="page-card" style="max-width: 1000px;">
+    <div class="page-card" style="max-width: 1000px; padding: 30px 20px;">
       <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 20px;">
         <h1 style="font-size: 2.5rem; margin-bottom: 5px; color: var(--primary-dark);">Privacy Policy</h1>
         <h2 style="font-size: 1.8rem; color: var(--accent-orange); margin-top: 0;">गोपनीयता धोरण</h2>
         <p style="font-weight: 600; color: var(--text-muted);">Last updated / अंतिम अद्यतन: ${new Date().toLocaleDateString()}</p>
       </div>
 
-      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--primary);">
-        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">1. Introduction / प्रस्तावना</h3>
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 1.3rem;">1. Introduction / प्रस्तावना</h3>
         <p style="margin-bottom: 10px;">At Vitthal Speaks, accessible from https://www.vitthalspeaks.com/, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by us and how we use it.</p>
-        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">विठ्ठल स्पीक्स (https://www.vitthalspeaks.com/) वर, आमच्या अभ्यागतांची गोपनीयता ही आमची मुख्य प्राथमिकता आहे. या गोपनीयता धोरणाच्या दस्तऐवजात आम्ही कोणती माहिती गोळा करतो आणि ती कशी वापरतो याचे तपशील आहेत.</p>
+        <p style="color: var(--text-main); font-weight: 500; margin-top: 0;">विठ्ठल स्पीक्स (https://www.vitthalspeaks.com/) वर, आमच्या अभ्यागतांची गोपनीयता ही आमची मुख्य प्राथमिकता आहे. या गोपनीयता धोरणाच्या दस्तऐवजात आम्ही कोणती माहिती गोळा करतो आणि ती कशी वापरतो याचे तपशील आहेत.</p>
       </div>
 
-      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--accent-orange);">
-        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">2. Google DoubleClick DART Cookie / गुगल डार्ट कुकीज</h3>
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 1.3rem;">2. Google DoubleClick DART Cookie / गुगल डार्ट कुकीज</h3>
         <p style="margin-bottom: 10px;">Google is one of a third-party vendor on our site. It uses DART cookies to serve ads to our site visitors based upon their visit to our site and other sites on the internet. Visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at: <a href="https://policies.google.com/technologies/ads" target="_blank" style="color:var(--primary); font-weight:bold;">Google Privacy Policy</a>.</p>
-        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">गुगल हे आमच्या साइटवरील तृतीय-पक्ष विक्रेत्यांपैकी एक आहे. इंटरनेटवरील इतर साइट्स आणि आमच्या साइटच्या भेटीवर आधारित अभ्यागतांना जाहिराती दाखवण्यासाठी गुगल DART कुकीज वापरते. अभ्यागत गुगल जाहिरात नेटवर्क गोपनीयता धोरणाला भेट देऊन DART कुकीजचा वापर नाकारू शकतात.</p>
+        <p style="color: var(--text-main); font-weight: 500; margin-top: 0;">गुगल हे आमच्या साइटवरील तृतीय-पक्ष विक्रेत्यांपैकी एक आहे. इंटरनेटवरील इतर साइट्स आणि आमच्या साइटच्या भेटीवर आधारित अभ्यागतांना जाहिराती दाखवण्यासाठी गुगल DART कुकीज वापरते. अभ्यागत गुगल जाहिरात नेटवर्क गोपनीयता धोरणाला भेट देऊन DART कुकीजचा वापर नाकारू शकतात.</p>
       </div>
 
-      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--primary);">
-        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">3. Our Advertising Partners / आमचे जाहिरातदार</h3>
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 1.3rem;">3. Our Advertising Partners / आमचे जाहिरातदार</h3>
         <p style="margin-bottom: 10px;">Some of advertisers on our site may use cookies and web beacons. Our advertising partners include Google AdSense. Each of our advertising partners has their own Privacy Policy for their policies on user data.</p>
-        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">आमच्या साइटवरील काही जाहिरातदार कुकीज वापरू शकतात. आमच्या जाहिरात भागीदारांमध्ये Google AdSense समाविष्ट आहे. वापरकर्त्यांच्या डेटावरील धोरणांसाठी त्यांच्याकडे स्वतःचे गोपनीयता धोरण आहे.</p>
+        <p style="color: var(--text-main); font-weight: 500; margin-top: 0;">आमच्या साइटवरील काही जाहिरातदार कुकीज वापरू शकतात. आमच्या जाहिरात भागीदारांमध्ये Google AdSense समाविष्ट आहे. वापरकर्त्यांच्या डेटावरील धोरणांसाठी त्यांच्याकडे स्वतःचे गोपनीयता धोरण आहे.</p>
       </div>
 
-      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--accent-orange);">
-        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">4. Log Files / लॉग फाइल्स</h3>
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 1.3rem;">4. Log Files / लॉग फाइल्स</h3>
         <p style="margin-bottom: 10px;">Vitthal Speaks follows a standard procedure of using log files. The information collected by log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable.</p>
-        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">विठ्ठल स्पीक्स लॉग फाइल्स वापरण्याच्या मानक प्रक्रियेचे पालन करते. या फाइल्स अभ्यागत जेव्हा वेबसाइटला भेट देतात तेव्हा त्यांची नोंद घेतात. यामध्ये आयपी (IP) ॲड्रेस, ब्राउझर प्रकार, तारीख आणि वेळेची नोंद असते. ही कोणतीही वैयक्तिकरीत्या ओळखता येण्याजोगी माहिती नसते.</p>
+        <p style="color: var(--text-main); font-weight: 500; margin-top: 0;">विठ्ठल स्पीक्स लॉग फाइल्स वापरण्याच्या मानक प्रक्रियेचे पालन करते. या फाइल्स अभ्यागत जेव्हा वेबसाइटला भेट देतात तेव्हा त्यांची नोंद घेतात. यामध्ये आयपी (IP) ॲड्रेस, ब्राउझर प्रकार, तारीख आणि वेळेची नोंद असते. ही कोणतीही वैयक्तिकरीत्या ओळखता येण्याजोगी माहिती नसते.</p>
       </div>
 
-      <div style="margin-bottom: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid var(--primary);">
-        <h3 style="color: var(--primary); margin-top: 0; font-size: 1.2rem;">5. Consent / संमती</h3>
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 1.3rem;">5. Consent / संमती</h3>
         <p style="margin-bottom: 10px;">By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p>
-        <p style="color: var(--text-main); font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 0;">आमची वेबसाइट वापरून, तुम्ही याद्वारे आमच्या गोपनीयता धोरणास संमती देता आणि त्यातील अटी व शर्तींना सहमती दर्शवता.</p>
+        <p style="color: var(--text-main); font-weight: 500; margin-top: 0;">आमची वेबसाइट वापरून, तुम्ही याद्वारे आमच्या गोपनीयता धोरणास संमती देता आणि त्यातील अटी व शर्तींना सहमती दर्शवता.</p>
       </div>
 
-      <div style="margin-bottom: 10px; background: #fff8e1; padding: 30px; border-radius: 12px; border: 2px solid #ffe082; text-align: center;">
+      <div style="margin-bottom: 10px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 30px;">
         <h3 style="color: var(--primary-dark); margin-top: 0; font-size: 1.4rem;">6. Contact Us / संपर्क साधा</h3>
         <p style="margin-bottom: 10px;">If you have any questions or require more information about our Privacy Policy, do not hesitate to contact us through email.</p>
         <p style="color: var(--text-main); font-weight: 600; margin-bottom: 20px;">तुम्हाला आमच्या गोपनीयता धोरणाबद्दल काही प्रश्न असल्यास किंवा अधिक माहितीची आवश्यकता असल्यास, कृपया आमच्याशी संपर्क साधा.</p>
