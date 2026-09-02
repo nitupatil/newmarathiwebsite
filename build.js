@@ -139,6 +139,17 @@ const globalCSS = `
   .ad-next { right: 0; border-radius: 4px 0 0 4px; }
   .ad-prev:hover, .ad-next:hover { background-color: rgba(0,0,0,0.8); }
 
+  /* Standard Forms and Standard Page Layout */
+  .page-card { max-width: 800px; background: white; padding: 40px; border-radius: 12px; margin: 40px auto; box-shadow: var(--shadow); }
+  .page-card h1 { color: var(--primary-dark); margin-bottom: 20px; }
+  .page-card p, .page-card li { font-size: 1.05rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 15px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--primary-dark); }
+  .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 1rem; }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255,152,0,0.1); }
+  .btn-submit { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; }
+  .btn-submit:hover { background: var(--primary-dark); }
+
   @media (max-width: 768px) {
     body { background: #ffffff; }
     .header-top { flex-direction: column; gap: 12px; padding: 15px 4%; align-items: flex-start; }
@@ -150,6 +161,7 @@ const globalCSS = `
     
     .container { padding: 0; margin: 0; width: 100%; max-width: 100%; }
     .article-layout { gap: 0; }
+    .page-card { margin: 20px 16px; padding: 25px 16px; }
     
     .article-card { padding: 20px 16px; border-radius: 0; box-shadow: none; border: none; border-bottom: 1px solid #e2e8f0; }
     .article-title { font-size: 1.8rem; margin-top: 10px; }
@@ -304,6 +316,36 @@ const generateGlobalScripts = (postsData) => `
         showSlides(1); 
       }
     });
+
+    // Handle Contact Form Submission from Contact Page
+    async function submitContactForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById('c-submit');
+      const status = document.getElementById('c-status');
+      
+      const name = document.getElementById('c-name').value;
+      const email = document.getElementById('c-email').value;
+      const message = document.getElementById('c-message').value;
+
+      btn.disabled = true;
+      btn.innerText = 'Sending Message...';
+      
+      try {
+        const { error } = await db.from('contact_messages').insert([{ name, email, message }]);
+        if (error) throw error;
+        
+        status.style.color = 'green';
+        status.innerText = 'Message sent successfully! We will get back to you soon.';
+        document.getElementById('contactForm').reset();
+      } catch (err) {
+        console.error(err);
+        status.style.color = 'red';
+        status.innerText = 'Error sending message. Please try again later.';
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Send Message';
+      }
+    }
   </script>
 `;
 
@@ -313,7 +355,6 @@ const generateSEO = (title, pathStr, post = null) => {
   let keywords = "Vitthal Speaks, Marathi News, योजना, महाराष्ट्र, नोकरी";
   let ogImage = FAVICON_URL;
 
-  // PRIORITY: Use SEO fields if they exist, otherwise fallback safely
   if (post) {
     finalTitle = post.seo_title || post.title;
     desc = post.seo_description || post.excerpt || desc;
@@ -427,6 +468,7 @@ async function buildSite() {
   const dynamicScripts = generateGlobalScripts(minimalSearchData);
   const headerNavHtml = generateHeader();
 
+  // 1. GENERATE ALL BLOG POST PAGES
   if (posts) {
     posts.forEach((post) => {
       const postAdsHtml = generateAdCarousel(ads, 'post', post.id);
@@ -472,6 +514,7 @@ async function buildSite() {
     });
   }
 
+  // 2. GENERATE HOMEPAGE (index.html)
   let homeAdsHtml = generateAdCarousel(ads, 'home');
   let tickerHtml = '';
   let homeCards = '<div style="padding: 40px; text-align: center; color: var(--text-muted); grid-column: 1 / -1;">नवीन अपडेट्स लवकरच येत आहेत...</div>';
@@ -500,6 +543,64 @@ async function buildSite() {
     <body>${headerNavHtml}${tickerHtml}<div class="container">${homeAdsHtml}<h2 class="section-title">📰 ताज्या पोस्ट</h2><div class="news-grid">${homeCards}</div></div></body></html>`;
   fs.writeFileSync(path.join(rootPath, 'index.html'), indexHtml);
 
+  // 3. GENERATE CONTACT PAGE (contact.html)
+  const contactContent = `
+    <div class="page-card">
+      <h1 style="text-align: center;">Contact Us</h1>
+      <p style="text-align: center;">If you have any questions, suggestions, or queries regarding government schemes, please feel free to reach out to us at <strong>vitthalaherblogs@gmail.com</strong>, or fill out the form below.</p>
+      
+      <form id="contactForm" onsubmit="submitContactForm(event)" style="margin-top: 30px;">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="c-name" required placeholder="Enter your full name">
+        </div>
+        <div class="form-group">
+          <label>Your Email</label>
+          <input type="email" id="c-email" required placeholder="Enter your email address">
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="c-message" required rows="5" placeholder="Write your message here..."></textarea>
+        </div>
+        <button type="submit" id="c-submit" class="btn-submit">Send Message</button>
+        <div id="c-status" style="text-align: center; margin-top: 15px; font-weight: 600;"></div>
+      </form>
+    </div>
+  `;
+  const contactHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+    ${generateSEO("Contact Us - Vitthal Speaks", "/contact", null)}<style>${globalCSS}</style>${dynamicScripts}</head>
+    <body>${headerNavHtml}<div class="container">${contactContent}</div></body></html>`;
+  fs.writeFileSync(path.join(rootPath, 'contact.html'), contactHtml);
+
+  // 4. GENERATE PRIVACY POLICY PAGE (privacy-policy.html)
+  const privacyContent = `
+    <div class="page-card">
+      <h1>Privacy Policy</h1>
+      <p>Last updated: ${new Date().toLocaleDateString()}</p>
+      <p>At Vitthal Speaks (accessible from https://www.vitthalspeaks.com/), one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Vitthal Speaks and how we use it.</p>
+      
+      <h3>Google DoubleClick DART Cookie</h3>
+      <p>Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to www.website.com and other sites on the internet. However, visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at the following URL – <a href="https://policies.google.com/technologies/ads" target="_blank">https://policies.google.com/technologies/ads</a>.</p>
+      
+      <h3>Our Advertising Partners</h3>
+      <p>Some of advertisers on our site may use cookies and web beacons. Our advertising partners include Google AdSense. Each of our advertising partners has their own Privacy Policy for their policies on user data.</p>
+      
+      <h3>Log Files</h3>
+      <p>Vitthal Speaks follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this and a part of hosting services' analytics. The information collected by log files include internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable.</p>
+      
+      <h3>Consent</h3>
+      <p>By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p>
+      
+      <h3>Contact Us</h3>
+      <p>If you have any additional questions or require more information about our Privacy Policy, do not hesitate to contact us through email at <strong>vitthalaherblogs@gmail.com</strong>.</p>
+    </div>
+  `;
+  const privacyHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+    ${generateSEO("Privacy Policy - Vitthal Speaks", "/privacy-policy", null)}<style>${globalCSS}</style>${dynamicScripts}</head>
+    <body>${headerNavHtml}<div class="container">${privacyContent}</div></body></html>`;
+  fs.writeFileSync(path.join(rootPath, 'privacy-policy.html'), privacyHtml);
+
+  // 5. GENERATE 404 PAGE
   const notFoundHtml = `<!DOCTYPE html><html lang="mr"><head><meta charset="UTF-8">
     ${generateSEO("Page Not Found", "/404", null)}<style>${globalCSS}</style>${dynamicScripts}</head>
     <body>${headerNavHtml}
